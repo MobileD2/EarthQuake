@@ -1,6 +1,8 @@
 <resources>
   <string name="app_name">EarthQuake</string>
 
+  <string name="tag">EARTHQUAKE</string>
+
   <string name="quake_4.5_hour_feed">http://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/4.5_hour.quakeml</string>
   <string name="quake_2.5_hour_feed">http://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/2.5_hour.quakeml</string>
   <string name="quake_1.0_hour_feed">http://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/1.0_hour.quakeml</string>

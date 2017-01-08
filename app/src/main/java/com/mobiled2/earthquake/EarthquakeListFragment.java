@@ -1,6 +1,5 @@
 package com.mobiled2.earthquake;
 
-import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.ListFragment;
@@ -18,13 +17,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.text.DateFormat;
 import java.util.ArrayList;
-import java.util.GregorianCalendar;
-import java.util.Locale;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -42,7 +35,7 @@ public class EarthquakeListFragment extends ListFragment {
   public void onActivityCreated(Bundle savedInstanceState) {
     super.onActivityCreated(savedInstanceState);
 
-    aa = new ArrayAdapter<Quake>(getActivity(), android.R.layout.simple_list_item_1, earthquakes);
+    aa = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_1, earthquakes);
 
     setListAdapter(aa);
 
@@ -84,34 +77,7 @@ public class EarthquakeListFragment extends ListFragment {
 
         if (nl.getLength() > 0) {
           for (int i = 0; i < nl.getLength(); ++i) {
-            Element entry = (Element)nl.item(i);
-
-            Element description = (Element)entry.getElementsByTagName("description").item(0);
-            String details = description.getElementsByTagName("text").item(0).getFirstChild().getNodeValue();
-
-            Element originEl = (Element)entry.getElementsByTagName("origin").item(0);
-
-            String time = ((Element)originEl.getElementsByTagName("time").item(0)).getElementsByTagName("value").item(0).getFirstChild().getNodeValue();
-            Date qdate = new GregorianCalendar(0, 0, 0).getTime();
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'hh:mm:ss.SSS'Z'", Locale.getDefault());
-
-            try {
-              qdate = sdf.parse(time);
-            } catch (ParseException e) {
-              Log.d(TAG, "Date parsing exception", e);
-            }
-
-            Location location = new Location("dummyGPS");
-            String longitude = ((Element)originEl.getElementsByTagName("longitude").item(0)).getElementsByTagName("value").item(0).getFirstChild().getNodeValue();
-            String latitude = ((Element)originEl.getElementsByTagName("latitude").item(0)).getElementsByTagName("value").item(0).getFirstChild().getNodeValue();
-
-            location.setLongitude(Double.parseDouble(longitude));
-            location.setLatitude(Double.parseDouble(latitude));
-
-            Element magnitudeEl = (Element)entry.getElementsByTagName("magnitude").item(0);
-            String magnitude = ((Element)magnitudeEl.getElementsByTagName("mag").item(0)).getElementsByTagName("value").item(0).getFirstChild().getNodeValue();
-
-            final Quake quake = new Quake(qdate, details, location, Double.parseDouble(magnitude));
+            final Quake quake = new QuakeML().parse((Element)nl.item(i));
 
             handler.post(new Runnable() {
               @Override
@@ -131,7 +97,6 @@ public class EarthquakeListFragment extends ListFragment {
       Log.d(TAG, "ParserConfigurationException");
     } catch (SAXException e) {
       Log.d(TAG, "SAXException");
-    } finally {
     }
   }
 

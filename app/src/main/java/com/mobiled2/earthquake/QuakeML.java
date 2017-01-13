@@ -39,8 +39,8 @@ class QuakeML {
     location.setLatitude(Double.parseDouble(latitude));
 
     Element magnitudeEl = (Element)entry.getElementsByTagName("magnitude").item(0);
-    Double magnitude = Double.parseDouble(((Element)magnitudeEl.getElementsByTagName("mag").item(0)).getElementsByTagName("value").item(0).getFirstChild().getNodeValue());
+    String magnitude = ((Element)magnitudeEl.getElementsByTagName("mag").item(0)).getElementsByTagName("value").item(0).getFirstChild().getNodeValue();
 
-    return new Quake(qdate, details, location, magnitude);
+    return new Quake(qdate, details, location, Double.parseDouble(magnitude));
   }
 }

@@ -16,38 +16,6 @@ import java.util.Locale;
 class QuakeML {
   private static final String TAG = "EARTHQUAKE";
 
-  private String parseStringNodeList(NodeList entry) {
-    if (entry == null) {
-      return null;
-    }
-
-    Element entryEl = (Element)entry.item(0);
-
-    if (entryEl == null) {
-      return null;
-    }
-
-    NodeList valueNodeList = entryEl.getElementsByTagName("value");
-
-    if (valueNodeList == null) {
-      return null;
-    }
-
-    Element valueEl = (Element)valueNodeList.item(0);
-
-    if (valueEl == null) {
-      return null;
-    }
-
-    Node valueChildNode = valueEl.getFirstChild();
-
-    if (valueChildNode == null) {
-      return null;
-    }
-
-    return valueChildNode.getNodeValue();
-  }
-
   Quake parse(Element entry) {
     if (entry == null) {
       return null;
@@ -152,5 +120,37 @@ class QuakeML {
     location.setLatitude(Double.parseDouble(latitude));
 
     return new Quake(qdate, details, location, Double.parseDouble(magnitude));
+  }
+
+  private String parseStringNodeList(NodeList entry) {
+    if (entry == null) {
+      return null;
+    }
+
+    Element entryEl = (Element)entry.item(0);
+
+    if (entryEl == null) {
+      return null;
+    }
+
+    NodeList valueNodeList = entryEl.getElementsByTagName("value");
+
+    if (valueNodeList == null) {
+      return null;
+    }
+
+    Element valueEl = (Element)valueNodeList.item(0);
+
+    if (valueEl == null) {
+      return null;
+    }
+
+    Node valueChildNode = valueEl.getFirstChild();
+
+    if (valueChildNode == null) {
+      return null;
+    }
+
+    return valueChildNode.getNodeValue();
   }
 }

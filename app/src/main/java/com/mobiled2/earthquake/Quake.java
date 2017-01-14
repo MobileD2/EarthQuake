@@ -24,19 +24,19 @@ class Quake {
     return new SimpleDateFormat("HH:mm", Locale.getDefault()).format(date) + ", " + magnitude + ", " + details;
   }
 
-  private Date getDate() {
+  Date getDate() {
     return date;
   }
 
-  public String getDetails() {
+  String getDetails() {
     return details;
   }
 
-  public Location getLocation() {
+  Location getLocation() {
     return location;
   }
 
-  public double getMagnitude() {
+  double getMagnitude() {
     return magnitude;
   }
 }

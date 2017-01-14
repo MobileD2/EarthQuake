@@ -29,10 +29,27 @@
     <activity android:name=".PreferencesActivity"
               android:label="Earthquake Preferences"/>
 
+    <activity android:name=".EarthquakeSearchActivity"
+              android:label="Earthquake Search"
+              android:launchMode="singleTop">
+
+      <intent-filter>
+        <action android:name="android.intent.action.SEARCH"/>
+        <category android:name="android.intent.category.DEFAULT"/>
+      </intent-filter>
+
+      <meta-data android:name="android.app.searchable"
+                 android:resource="@xml/searchable"/>
+
+    </activity>
+
     <provider
       android:authorities="com.mobiled2.earthquakecontentprovider"
       android:name=".EarthquakeContentProvider"
       android:exported="false"/>
+
+    <meta-data android:name="android.app.default_searchable"
+               android:value=".EarthquakeSearchActivity"/>
 
   </application>
 

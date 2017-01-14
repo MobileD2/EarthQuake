@@ -11,7 +11,6 @@ import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.util.Log;
-import android.widget.ArrayAdapter;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -24,14 +23,13 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.ArrayList;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 public class EarthquakeListFragment extends ListFragment implements LoaderManager.LoaderCallbacks<Cursor> {
-  private static final String TAG = "EARTHQUAKE";
+  private static final String TAG = "EARTHQUAKE_FRAGMENT";
   private static final int RECORDS_COUNT = 100;
 
   SimpleCursorAdapter adapter;

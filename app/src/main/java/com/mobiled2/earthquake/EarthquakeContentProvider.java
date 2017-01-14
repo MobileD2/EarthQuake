@@ -1,5 +1,6 @@
 package com.mobiled2.earthquake;
 
+import android.app.SearchManager;
 import android.content.ContentProvider;
 import android.content.ContentUris;
 import android.content.ContentValues;
@@ -15,6 +16,8 @@ import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.util.Log;
 
+import java.util.HashMap;
+
 public class EarthquakeContentProvider extends ContentProvider {
   public static final Uri CONTENT_URI = Uri.parse("content://com.mobiled2.earthquakecontentprovider");
 
@@ -26,21 +29,34 @@ public class EarthquakeContentProvider extends ContentProvider {
   public static final String KEY_LOCATION_LONGITUDE = "longitude";
   public static final String KEY_MAGNITUDE = "magnitude";
 
-  private EarthquakeDatabaseHelper dbHelper;
-
   private static final int QUAKES = 1;
   private static final int QUAKE_ID = 2;
+  private static final int SEARCH = 3;
+
+  private static final HashMap<String, String> SEARCH_PROJECTION_MAP;
+
+  static {
+    SEARCH_PROJECTION_MAP = new HashMap<>();
+
+    SEARCH_PROJECTION_MAP.put(SearchManager.SUGGEST_COLUMN_TEXT_1, KEY_SUMMARY + " AS " + SearchManager.SUGGEST_COLUMN_TEXT_1);
+    SEARCH_PROJECTION_MAP.put(KEY_ID, KEY_ID + " AS " + KEY_ID);
+  }
 
   private static final UriMatcher uriMatcher;
-
-  private Context context;
 
   static {
     uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
 
     uriMatcher.addURI("com.mobiled2.earthquakecontentprovider", "earthquakes", QUAKES);
     uriMatcher.addURI("com.mobiled2.earthquakecontentprovider", "earthquakes/#", QUAKE_ID);
-  };
+    uriMatcher.addURI("com.mobiled2.earthquakecontentprovider", SearchManager.SUGGEST_URI_PATH_QUERY, SEARCH);
+    uriMatcher.addURI("com.mobiled2.earthquakecontentprovider", SearchManager.SUGGEST_URI_PATH_QUERY + "/*", SEARCH);
+    uriMatcher.addURI("com.mobiled2.earthquakecontentprovider", SearchManager.SUGGEST_URI_PATH_SHORTCUT, SEARCH);
+    uriMatcher.addURI("com.mobiled2.earthquakecontentprovider", SearchManager.SUGGEST_URI_PATH_SHORTCUT + "/*", SEARCH);
+  }
+
+  private EarthquakeDatabaseHelper dbHelper;
+  private Context context;
 
   @Override
   public boolean onCreate() {
@@ -54,6 +70,7 @@ public class EarthquakeContentProvider extends ContentProvider {
     switch (uriMatcher.match(uri)) {
       case QUAKES: return "vnd.android.cursor.dir/vnd.mobiled2.earthquake";
       case QUAKE_ID: return "vnd.android.cursor.item/vnd.mobiled2.earthquake";
+      case SEARCH: return SearchManager.SUGGEST_MIME_TYPE;
       default: throw new IllegalArgumentException("Unsupported URI:" + uri);
     }
   }
@@ -66,7 +83,19 @@ public class EarthquakeContentProvider extends ContentProvider {
     qb.setTables(EarthquakeDatabaseHelper.EARTHQUAKE_TABLE);
 
     switch (uriMatcher.match(uri)) {
-      case QUAKE_ID: qb.appendWhere(KEY_ID + "=" + uri.getPathSegments().get(1));
+      case QUAKE_ID:
+        qb.appendWhere(KEY_ID + "=" + uri.getPathSegments().get(1));
+      break;
+      case SEARCH:
+        String searchQuery = "";
+
+        if (uri.getPathSegments().size() > 1) {
+          searchQuery = " LIKE \"%" + uri.getPathSegments().get(1) + "%\"";
+        }
+
+        qb.appendWhere(KEY_SUMMARY + searchQuery);
+        qb.setProjectionMap(SEARCH_PROJECTION_MAP);
+      break;
       default: break;
     }
 
@@ -100,7 +129,7 @@ public class EarthquakeContentProvider extends ContentProvider {
   @Override
   public int update(@NonNull Uri uri, ContentValues values, String selection, String[] selectionArgs) {
     SQLiteDatabase database = dbHelper.getWritableDatabase();
-    int count = 0;
+    int count;
 
     switch (uriMatcher.match(uri)) {
       case QUAKES:
@@ -118,7 +147,7 @@ public class EarthquakeContentProvider extends ContentProvider {
   @Override
   public int delete(@NonNull Uri uri, String selection, String[] selectionArgs) {
     SQLiteDatabase database = dbHelper.getWritableDatabase();
-    int count = 0;
+    int count;
 
     switch (uriMatcher.match(uri)) {
       case QUAKES:
@@ -172,5 +201,5 @@ public class EarthquakeContentProvider extends ContentProvider {
 
       onCreate(db);
     }
-  };
+  }
 }

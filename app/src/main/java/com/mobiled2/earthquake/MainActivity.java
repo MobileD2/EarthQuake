@@ -1,10 +1,8 @@
 package com.mobiled2.earthquake;
 
-import android.app.Activity;
 import android.support.v4.app.FragmentManager;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.res.Resources;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -57,46 +55,26 @@ public class MainActivity extends AppCompatActivity {
     super.onActivityResult(requestCode, resultCode, data);
 
     if (requestCode == SHOW_PREFERENCES) {
-      if (resultCode == Activity.RESULT_OK) {
-        updateFromPreferences();
+      updateFromPreferences();
 
-        FragmentManager fm = getSupportFragmentManager();
-        final EarthquakeListFragment earthquakeListFragment = (EarthquakeListFragment)fm.findFragmentById(R.id.EarthquakeListFragment);
-        Thread t = new Thread(new Runnable() {
-          @Override
-          public void run() {
-            earthquakeListFragment.refreshEarthquakes();
-          }
-        });
+      FragmentManager fm = getSupportFragmentManager();
+      final EarthquakeListFragment earthquakeListFragment = (EarthquakeListFragment)fm.findFragmentById(R.id.EarthquakeListFragment);
+      Thread t = new Thread(new Runnable() {
+        @Override
+        public void run() {
+          earthquakeListFragment.refreshEarthquakes();
+        }
+      });
 
-        t.start();
-      }
+      t.start();
     }
   }
 
   private void updateFromPreferences() {
     SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
 
-    int minMagIndex = prefs.getInt(PreferencesActivity.PREF_MIN_MAG_INDEX, 0);
-
-    if (minMagIndex < 0) {
-      minMagIndex = 0;
-    }
-
-    int freqIndex = prefs.getInt(PreferencesActivity.PREF_UPDATE_FREQ_INDEX, 0);
-
-    if (freqIndex < 0) {
-      freqIndex = 0;
-    }
-
     autoUpdateChecked = prefs.getBoolean(PreferencesActivity.PREF_AUTO_UPDATE, false);
-
-    Resources r = getResources();
-
-    String[] minMagValues = r.getStringArray(R.array.magnitude_values);
-    String[] freqValues = r.getStringArray(R.array.update_freq_values);
-
-    minimumMagnitude = Integer.valueOf(minMagValues[minMagIndex]);
-    updateFreq = Integer.valueOf(freqValues[freqIndex]);
+    minimumMagnitude = Integer.parseInt(prefs.getString(PreferencesActivity.PREF_MIN_MAG, "0"));
+    updateFreq = Integer.parseInt(prefs.getString(PreferencesActivity.PREF_UPDATE_FREQ, "-1"));
   }
 }

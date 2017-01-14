@@ -11,6 +11,7 @@
     android:label="@string/app_name"
     android:supportsRtl="true"
     android:theme="@style/AppTheme">
+
     <activity android:name=".MainActivity">
       <intent-filter>
         <action android:name="android.intent.action.MAIN"/>
@@ -24,8 +25,15 @@
               android:pathPrefix="/earthquake"/>
       </intent-filter>
     </activity>
+
     <activity android:name=".PreferencesActivity"
               android:label="Earthquake Preferences"/>
+
+    <provider
+      android:authorities="com.mobiled2.earthquakecontentprovider"
+      android:name=".EarthquakeContentProvider"
+      android:exported="false"/>
+
   </application>
 
 </manifest>

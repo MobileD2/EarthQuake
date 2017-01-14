@@ -4,6 +4,8 @@ import android.location.Location;
 import android.util.Log;
 
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -14,12 +16,127 @@ import java.util.Locale;
 class QuakeML {
   private static final String TAG = "EARTHQUAKE";
 
+  private String parseStringNodeList(NodeList entry) {
+    if (entry == null) {
+      return null;
+    }
+
+    Element entryEl = (Element)entry.item(0);
+
+    if (entryEl == null) {
+      return null;
+    }
+
+    NodeList valueNodeList = entryEl.getElementsByTagName("value");
+
+    if (valueNodeList == null) {
+      return null;
+    }
+
+    Element valueEl = (Element)valueNodeList.item(0);
+
+    if (valueEl == null) {
+      return null;
+    }
+
+    Node valueChildNode = valueEl.getFirstChild();
+
+    if (valueChildNode == null) {
+      return null;
+    }
+
+    return valueChildNode.getNodeValue();
+  }
+
   Quake parse(Element entry) {
-    Element originEl = (Element)entry.getElementsByTagName("origin").item(0);
+    if (entry == null) {
+      return null;
+    }
 
-    Element description = (Element)entry.getElementsByTagName("description").item(0);
+    NodeList originElNodeList = entry.getElementsByTagName("origin");
 
-    String time = ((Element)originEl.getElementsByTagName("time").item(0)).getElementsByTagName("value").item(0).getFirstChild().getNodeValue();
+    if (originElNodeList == null) {
+      return null;
+    }
+
+    Element originEl = (Element)originElNodeList.item(0);
+
+    if (originEl == null) {
+      return null;
+    }
+
+    NodeList descriptionNode = entry.getElementsByTagName("description");
+
+    if (descriptionNode == null) {
+      return null;
+    }
+
+    Element description = (Element)descriptionNode.item(0);
+
+    if (description == null) {
+      return null;
+    }
+
+    NodeList detailsNodeList = description.getElementsByTagName("text");
+
+    if (detailsNodeList == null) {
+      return null;
+    }
+
+    Element detailsEl = (Element)detailsNodeList.item(0);
+
+    if (detailsEl == null) {
+      return null;
+    }
+
+    Node detailsChildNode = detailsEl.getFirstChild();
+
+    if (detailsChildNode == null) {
+      return null;
+    }
+
+    String details = detailsChildNode.getNodeValue();
+
+    if (details == null) {
+      return null;
+    }
+
+    String time = parseStringNodeList(originEl.getElementsByTagName("time"));
+
+    if (time == null) {
+      return null;
+    }
+
+    String longitude = parseStringNodeList(originEl.getElementsByTagName("longitude"));
+
+    if (longitude == null) {
+      return null;
+    }
+
+    String latitude = parseStringNodeList(originEl.getElementsByTagName("latitude"));
+
+    if (latitude == null) {
+      return null;
+    }
+
+    NodeList magnitudeNodeList = entry.getElementsByTagName("magnitude");
+
+    if (magnitudeNodeList == null) {
+      return null;
+    }
+
+    Element magnitudeEl = (Element)magnitudeNodeList.item(0);
+
+    if (magnitudeEl == null) {
+      return null;
+    }
+
+    String magnitude = parseStringNodeList(magnitudeEl.getElementsByTagName("mag"));
+
+    if (magnitude == null) {
+      return null;
+    }
+
     Date qdate = new GregorianCalendar(0, 0, 0).getTime();
     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'hh:mm:ss.SSS'Z'", Locale.getDefault());
 
@@ -29,17 +146,10 @@ class QuakeML {
       Log.d(TAG, "Date parsing exception", e);
     }
 
-    String details = description.getElementsByTagName("text").item(0).getFirstChild().getNodeValue();
-
     Location location = new Location("dummyGPS");
-    String longitude = ((Element)originEl.getElementsByTagName("longitude").item(0)).getElementsByTagName("value").item(0).getFirstChild().getNodeValue();
-    String latitude = ((Element)originEl.getElementsByTagName("latitude").item(0)).getElementsByTagName("value").item(0).getFirstChild().getNodeValue();
 
     location.setLongitude(Double.parseDouble(longitude));
     location.setLatitude(Double.parseDouble(latitude));
-
-    Element magnitudeEl = (Element)entry.getElementsByTagName("magnitude").item(0);
-    String magnitude = ((Element)magnitudeEl.getElementsByTagName("mag").item(0)).getElementsByTagName("value").item(0).getFirstChild().getNodeValue();
 
     return new Quake(qdate, details, location, Double.parseDouble(magnitude));
   }

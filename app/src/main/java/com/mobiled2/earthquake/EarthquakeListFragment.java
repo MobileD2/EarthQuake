@@ -79,12 +79,14 @@ public class EarthquakeListFragment extends ListFragment {
           for (int i = 0; i < nl.getLength(); ++i) {
             final Quake quake = new QuakeML().parse((Element)nl.item(i));
 
-            handler.post(new Runnable() {
-              @Override
-              public void run() {
-                addNewQuake(quake);
-              }
-            });
+            if (quake != null) {
+              handler.post(new Runnable() {
+                @Override
+                public void run() {
+                  addNewQuake(quake);
+                }
+              });
+            }
           }
         }
       }

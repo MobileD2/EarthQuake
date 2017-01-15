@@ -101,7 +101,7 @@ public class EarthquakeContentProvider extends ContentProvider {
     }
 
     if (TextUtils.isEmpty(sortOrder)) {
-      sortOrder = KEY_DATE;
+      sortOrder = KEY_DATE + " DESC";
     }
 
     Cursor cursor = qb.query(database, projection, selection, selectionArgs, null, null, sortOrder);

@@ -18,9 +18,8 @@
                                           android:clickable="true"/>
   </LinearLayout>
 
-
-  <fragment android:name="com.mobiled2.earthquake.EarthquakeListFragment"
-            android:id="@+id/EarthquakeListFragment"
+  <fragment android:name="com.mobiled2.earthquake.ListFragment"
+            android:id="@+id/ListFragment"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             tools:layout="@android:layout/simple_list_item_1"/>

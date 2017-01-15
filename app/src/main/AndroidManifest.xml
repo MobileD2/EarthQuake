@@ -29,7 +29,7 @@
     <activity android:name=".PreferencesActivity"
               android:label="Earthquake Preferences"/>
 
-    <activity android:name=".EarthquakeSearchActivity"
+    <activity android:name=".SearchActivity"
               android:label="Earthquake Search"
               android:launchMode="singleTop">
 
@@ -45,11 +45,11 @@
 
     <provider
       android:authorities="com.mobiled2.earthquakecontentprovider"
-      android:name=".EarthquakeContentProvider"
+      android:name=".ContentProvider"
       android:exported="false"/>
 
     <meta-data android:name="android.app.default_searchable"
-               android:value=".EarthquakeSearchActivity"/>
+               android:value=".SearchActivity"/>
 
   </application>
 

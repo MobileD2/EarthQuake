@@ -1,7 +1,6 @@
 package com.mobiled2.earthquake;
 
 import android.app.SearchManager;
-import android.content.ContentProvider;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
@@ -18,7 +17,7 @@ import android.util.Log;
 
 import java.util.HashMap;
 
-public class EarthquakeContentProvider extends ContentProvider {
+public class ContentProvider extends android.content.ContentProvider {
   public static final Uri CONTENT_URI = Uri.parse("content://com.mobiled2.earthquakecontentprovider");
 
   public static final String KEY_ID = "_id";
@@ -56,13 +55,13 @@ public class EarthquakeContentProvider extends ContentProvider {
     uriMatcher.addURI("com.mobiled2.earthquakecontentprovider", SearchManager.SUGGEST_URI_PATH_SHORTCUT + "/*", SEARCH);
   }
 
-  private EarthquakeDatabaseHelper dbHelper;
+  private DatabaseHelper dbHelper;
   private Context context;
 
   @Override
   public boolean onCreate() {
     context = getContext();
-    dbHelper = new EarthquakeDatabaseHelper(context, EarthquakeDatabaseHelper.DATABASE_NAME, null, EarthquakeDatabaseHelper.DATABASE_VERSION);
+    dbHelper = new DatabaseHelper(context, DatabaseHelper.DATABASE_NAME, null, DatabaseHelper.DATABASE_VERSION);
     return true;
   }
 
@@ -81,7 +80,7 @@ public class EarthquakeContentProvider extends ContentProvider {
     SQLiteDatabase database = dbHelper.getWritableDatabase();
     SQLiteQueryBuilder qb = new SQLiteQueryBuilder();
 
-    qb.setTables(EarthquakeDatabaseHelper.EARTHQUAKE_TABLE);
+    qb.setTables(DatabaseHelper.EARTHQUAKE_TABLE);
 
     switch (uriMatcher.match(uri)) {
       case QUAKE_ID:
@@ -114,7 +113,7 @@ public class EarthquakeContentProvider extends ContentProvider {
   @Override
   public Uri insert(@NonNull Uri uri, ContentValues values) {
     SQLiteDatabase database = dbHelper.getWritableDatabase();
-    long rowId = database.insert(EarthquakeDatabaseHelper.EARTHQUAKE_TABLE, "quake", values);
+    long rowId = database.insert(DatabaseHelper.EARTHQUAKE_TABLE, "quake", values);
 
     if (rowId > 0) {
       Uri rowUri = ContentUris.withAppendedId(CONTENT_URI, rowId);
@@ -134,10 +133,10 @@ public class EarthquakeContentProvider extends ContentProvider {
 
     switch (uriMatcher.match(uri)) {
       case QUAKES:
-        count = database.update(EarthquakeDatabaseHelper.EARTHQUAKE_TABLE, values, selection, selectionArgs);
+        count = database.update(DatabaseHelper.EARTHQUAKE_TABLE, values, selection, selectionArgs);
       break;
       case QUAKE_ID:
-        count = database.update(EarthquakeDatabaseHelper.EARTHQUAKE_TABLE, values, KEY_ID + "=" + uri.getPathSegments().get(1) + (!TextUtils.isEmpty(selection) ? " AND (" + selection + ")" : ""), selectionArgs);
+        count = database.update(DatabaseHelper.EARTHQUAKE_TABLE, values, KEY_ID + "=" + uri.getPathSegments().get(1) + (!TextUtils.isEmpty(selection) ? " AND (" + selection + ")" : ""), selectionArgs);
       break;
       default: throw new IllegalArgumentException("Unsupported URI:" + uri);
     }
@@ -152,10 +151,10 @@ public class EarthquakeContentProvider extends ContentProvider {
 
     switch (uriMatcher.match(uri)) {
       case QUAKES:
-        count = database.delete(EarthquakeDatabaseHelper.EARTHQUAKE_TABLE, selection, selectionArgs);
+        count = database.delete(DatabaseHelper.EARTHQUAKE_TABLE, selection, selectionArgs);
       break;
       case QUAKE_ID:
-        count = database.delete(EarthquakeDatabaseHelper.EARTHQUAKE_TABLE, KEY_ID + "=" + uri.getPathSegments().get(1) + (!TextUtils.isEmpty(selection) ? " AND (" + selection + ")" : ""), selectionArgs);
+        count = database.delete(DatabaseHelper.EARTHQUAKE_TABLE, KEY_ID + "=" + uri.getPathSegments().get(1) + (!TextUtils.isEmpty(selection) ? " AND (" + selection + ")" : ""), selectionArgs);
       break;
       default: throw new IllegalArgumentException("Unsupported URI:" + uri);
     }
@@ -165,7 +164,7 @@ public class EarthquakeContentProvider extends ContentProvider {
     return count;
   }
 
-  private static class EarthquakeDatabaseHelper extends SQLiteOpenHelper {
+  private static class DatabaseHelper extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "earthquakes.db";
     private static final int DATABASE_VERSION = 1;
     private static final String EARTHQUAKE_TABLE = "earthquakes";
@@ -174,7 +173,7 @@ public class EarthquakeContentProvider extends ContentProvider {
 
     private SQLiteDatabase earthquakesDb;
 
-    EarthquakeDatabaseHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
+    DatabaseHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
       super(context, name, factory, version);
     }
 

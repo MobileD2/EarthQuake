@@ -5,7 +5,6 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
@@ -28,7 +27,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-public class EarthquakeListFragment extends ListFragment implements LoaderManager.LoaderCallbacks<Cursor> {
+public class ListFragment extends android.support.v4.app.ListFragment implements LoaderManager.LoaderCallbacks<Cursor> {
   private static final String TAG = "EARTHQUAKE_FRAGMENT";
   private static final int RECORDS_COUNT = 100;
 
@@ -40,7 +39,7 @@ public class EarthquakeListFragment extends ListFragment implements LoaderManage
   public void onActivityCreated(Bundle savedInstanceState) {
     super.onActivityCreated(savedInstanceState);
 
-    adapter = new SimpleCursorAdapter(getActivity(), android.R.layout.simple_list_item_1, null, new String[] { EarthquakeContentProvider.KEY_SUMMARY }, new int[] { android.R.id.text1 }, 0);
+    adapter = new SimpleCursorAdapter(getActivity(), android.R.layout.simple_list_item_1, null, new String[] { ContentProvider.KEY_SUMMARY }, new int[] { android.R.id.text1 }, 0);
     setListAdapter(adapter);
 
     getLoaderManager().initLoader(0, null, this);
@@ -59,7 +58,7 @@ public class EarthquakeListFragment extends ListFragment implements LoaderManage
     handler.post(new Runnable() {
       @Override
       public void run() {
-        getLoaderManager().restartLoader(0, null, EarthquakeListFragment.this);
+        getLoaderManager().restartLoader(0, null, ListFragment.this);
       }
     });
 
@@ -113,21 +112,21 @@ public class EarthquakeListFragment extends ListFragment implements LoaderManage
 
   private void addNewQuake(Quake _quake) {
     ContentResolver contentResolver = getActivity().getContentResolver();
-    Cursor cursor = contentResolver.query(EarthquakeContentProvider.CONTENT_URI, null, EarthquakeContentProvider.KEY_DATE + "=" + _quake.getDate().getTime(), null, null);
+    Cursor cursor = contentResolver.query(ContentProvider.CONTENT_URI, null, ContentProvider.KEY_DATE + "=" + _quake.getDate().getTime(), null, null);
 
     if (cursor != null) {
       try {
         if (cursor.getCount() == 0) {
           ContentValues values = new ContentValues();
 
-          values.put(EarthquakeContentProvider.KEY_DATE, _quake.getDate().getTime());
-          values.put(EarthquakeContentProvider.KEY_DETAILS, _quake.getDetails());
-          values.put(EarthquakeContentProvider.KEY_SUMMARY, _quake.toString());
-          values.put(EarthquakeContentProvider.KEY_LOCATION_LATITUDE, _quake.getLocation().getLatitude());
-          values.put(EarthquakeContentProvider.KEY_LOCATION_LONGITUDE, _quake.getLocation().getLongitude());
-          values.put(EarthquakeContentProvider.KEY_MAGNITUDE, _quake.getMagnitude());
+          values.put(ContentProvider.KEY_DATE, _quake.getDate().getTime());
+          values.put(ContentProvider.KEY_DETAILS, _quake.getDetails());
+          values.put(ContentProvider.KEY_SUMMARY, _quake.toString());
+          values.put(ContentProvider.KEY_LOCATION_LATITUDE, _quake.getLocation().getLatitude());
+          values.put(ContentProvider.KEY_LOCATION_LONGITUDE, _quake.getLocation().getLongitude());
+          values.put(ContentProvider.KEY_MAGNITUDE, _quake.getMagnitude());
 
-          contentResolver.insert(EarthquakeContentProvider.CONTENT_URI, values);
+          contentResolver.insert(ContentProvider.CONTENT_URI, values);
         }
       } finally {
         cursor.close();
@@ -137,17 +136,17 @@ public class EarthquakeListFragment extends ListFragment implements LoaderManage
 
   @Override
   public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-    MainActivity earthquakeActivity = (MainActivity)getActivity();
+    MainActivity mainActivity = (MainActivity)getActivity();
 
     String[] projection = new String[] {
-      EarthquakeContentProvider.KEY_ID,
-      EarthquakeContentProvider.KEY_SUMMARY
+      ContentProvider.KEY_ID,
+      ContentProvider.KEY_SUMMARY
     };
 
-    String selection = EarthquakeContentProvider.KEY_MAGNITUDE + " > " + earthquakeActivity.minimumMagnitude;
-    String sortOrder = EarthquakeContentProvider.KEY_DATE + " DESC LIMIT " + RECORDS_COUNT;
+    String selection = ContentProvider.KEY_MAGNITUDE + " > " + mainActivity.minimumMagnitude;
+    String sortOrder = ContentProvider.KEY_DATE + " DESC LIMIT " + RECORDS_COUNT;
 
-    return new CursorLoader(getActivity(), EarthquakeContentProvider.CONTENT_URI, projection, selection, null, sortOrder);
+    return new CursorLoader(getActivity(), ContentProvider.CONTENT_URI, projection, selection, null, sortOrder);
   }
 
   @Override

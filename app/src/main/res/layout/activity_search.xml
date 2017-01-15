@@ -4,10 +4,10 @@
                 xmlns:tools="http://schemas.android.com/tools"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                tools:context="com.mobiled2.earthquake.EarthquakeSearchActivity">
+                tools:context="com.mobiled2.earthquake.SearchActivity">
 
-  <fragment android:name="com.mobiled2.earthquake.EarthquakeSearchFragment"
-            android:id="@+id/EarthquakeSearchFragment"
+  <fragment android:name="com.mobiled2.earthquake.SearchFragment"
+            android:id="@+id/SearchFragment"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             tools:layout="@android:layout/simple_list_item_1"/>

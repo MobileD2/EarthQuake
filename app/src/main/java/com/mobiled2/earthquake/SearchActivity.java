@@ -4,7 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
-public class EarthquakeSearchActivity extends AppCompatActivity {
+public class SearchActivity extends AppCompatActivity {
   private static final String TAG = "SEARCH_ACTIVITY";
 
   @Override
@@ -20,7 +20,7 @@ public class EarthquakeSearchActivity extends AppCompatActivity {
   }
 
   private void restartLoader(Intent intent) {
-    EarthquakeSearchFragment fragment = (EarthquakeSearchFragment)getSupportFragmentManager().findFragmentById(R.id.EarthquakeSearchFragment);
+    SearchFragment fragment = (SearchFragment)getSupportFragmentManager().findFragmentById(R.id.SearchFragment);
     fragment.restartLoader(intent);
   }
 }

@@ -1,8 +1,6 @@
 package com.mobiled2.earthquake;
 
-import android.app.Activity;
 import android.app.SearchManager;
-import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -12,7 +10,7 @@ import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.SimpleCursorAdapter;
 
-public class EarthquakeSearchFragment extends ListFragment implements LoaderManager.LoaderCallbacks<Cursor> {
+public class SearchFragment extends ListFragment implements LoaderManager.LoaderCallbacks<Cursor> {
   public static final String QUERY_EXTRA_KEY = "QUERY_EXTRA_KEY";
 
   private static final String TAG = "SEARCH_FRAGMENT";
@@ -23,7 +21,7 @@ public class EarthquakeSearchFragment extends ListFragment implements LoaderMana
   public void onActivityCreated(Bundle savedInstanceState) {
     super.onActivityCreated(savedInstanceState);
 
-    adapter = new SimpleCursorAdapter(getActivity(), android.R.layout.simple_list_item_1, null, new String[] { EarthquakeContentProvider.KEY_SUMMARY }, new int[] { android.R.id.text1 }, 0);
+    adapter = new SimpleCursorAdapter(getActivity(), android.R.layout.simple_list_item_1, null, new String[] { ContentProvider.KEY_SUMMARY }, new int[] { android.R.id.text1 }, 0);
     setListAdapter(adapter);
 
     getLoaderManager().initLoader(0, null, this);
@@ -40,14 +38,14 @@ public class EarthquakeSearchFragment extends ListFragment implements LoaderMana
     }
 
     String[] projection = {
-      EarthquakeContentProvider.KEY_ID,
-      EarthquakeContentProvider.KEY_SUMMARY
+      ContentProvider.KEY_ID,
+      ContentProvider.KEY_SUMMARY
     };
 
-    String selection = EarthquakeContentProvider.KEY_SUMMARY + " LIKE \"%" + query + "%\"";
-    String sortOrder = EarthquakeContentProvider.KEY_SUMMARY + " COLLATE LOCALIZED ASC";
+    String selection = ContentProvider.KEY_SUMMARY + " LIKE \"%" + query + "%\"";
+    String sortOrder = ContentProvider.KEY_SUMMARY + " COLLATE LOCALIZED ASC";
 
-    return new CursorLoader(getActivity(), EarthquakeContentProvider.CONTENT_URI, projection, selection, null, sortOrder);
+    return new CursorLoader(getActivity(), ContentProvider.CONTENT_URI, projection, selection, null, sortOrder);
   }
 
   @Override

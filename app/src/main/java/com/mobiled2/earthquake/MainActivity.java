@@ -8,9 +8,8 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.SearchView;
-import android.util.Log;
+import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -92,33 +91,5 @@ public class MainActivity extends AppCompatActivity {
     SearchView searchView = (SearchView)findViewById(R.id.searchView);
 
     searchView.setSearchableInfo(searchableInfo);
-
-    searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-      @Override
-      public boolean onQueryTextSubmit(String query) {
-        Log.d(TAG, "onQueryTextSubmit: " + query);
-        return false;
-      }
-
-      @Override
-      public boolean onQueryTextChange(String query) {
-        Log.d(TAG, "onQueryTextChange: " + query);
-        return false;
-      }
-    });
-
-    searchView.setOnSuggestionListener(new SearchView.OnSuggestionListener() {
-      @Override
-      public boolean onSuggestionSelect(int position) {
-        Log.d(TAG, "onSuggestionSelect: " + position);
-        return false;
-      }
-
-      @Override
-      public boolean onSuggestionClick(int position) {
-        Log.d(TAG, "onSuggestionClick: " + position);
-        return false;
-      }
-    });
   }
 }

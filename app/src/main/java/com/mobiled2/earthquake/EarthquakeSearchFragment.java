@@ -5,14 +5,12 @@ import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.SimpleCursorAdapter;
-import android.util.Log;
 
 public class EarthquakeSearchFragment extends ListFragment implements LoaderManager.LoaderCallbacks<Cursor> {
   public static final String QUERY_EXTRA_KEY = "QUERY_EXTRA_KEY";
@@ -29,11 +27,13 @@ public class EarthquakeSearchFragment extends ListFragment implements LoaderMana
     setListAdapter(adapter);
 
     getLoaderManager().initLoader(0, null, this);
+
+    restartLoader(getActivity().getIntent());
   }
 
   @Override
   public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-    String query = "0";
+    String query = "";
 
     if (args != null) {
       query = args.getString(QUERY_EXTRA_KEY);
@@ -61,11 +61,15 @@ public class EarthquakeSearchFragment extends ListFragment implements LoaderMana
   }
 
   public void restartLoader(Intent intent) {
+    Bundle bundle = new Bundle();
+
     if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
-      Bundle bundle = new Bundle();
-
       bundle.putString(QUERY_EXTRA_KEY, intent.getStringExtra(SearchManager.QUERY));
+      getLoaderManager().restartLoader(0, bundle, this);
+    }
 
+    if (Intent.ACTION_VIEW.equals(intent.getAction())) {
+      bundle.putString(QUERY_EXTRA_KEY, intent.getStringExtra(SearchManager.EXTRA_DATA_KEY));
       getLoaderManager().restartLoader(0, bundle, this);
     }
   }

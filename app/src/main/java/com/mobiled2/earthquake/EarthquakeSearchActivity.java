@@ -11,7 +11,6 @@ public class EarthquakeSearchActivity extends AppCompatActivity {
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_search);
-    restartLoader(getIntent());
   }
 
   @Override

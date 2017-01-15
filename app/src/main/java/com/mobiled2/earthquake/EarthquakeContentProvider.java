@@ -39,6 +39,7 @@ public class EarthquakeContentProvider extends ContentProvider {
     SEARCH_PROJECTION_MAP = new HashMap<>();
 
     SEARCH_PROJECTION_MAP.put(SearchManager.SUGGEST_COLUMN_TEXT_1, KEY_SUMMARY + " AS " + SearchManager.SUGGEST_COLUMN_TEXT_1);
+    SEARCH_PROJECTION_MAP.put(SearchManager.SUGGEST_COLUMN_INTENT_EXTRA_DATA, KEY_SUMMARY + " AS " + SearchManager.SUGGEST_COLUMN_INTENT_EXTRA_DATA);
     SEARCH_PROJECTION_MAP.put(KEY_ID, KEY_ID + " AS " + KEY_ID);
   }
 

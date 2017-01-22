@@ -1,6 +1,7 @@
 package com.mobiled2.earthquake;
 
 import android.app.AlarmManager;
+import android.app.IntentService;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.ContentResolver;
@@ -31,11 +32,19 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-public class UpdateService extends Service {
+public class UpdateService extends IntentService {
   private static final String TAG = "EARTHQUAKE_SERVICE";
 
   private AlarmManager alarmManager;
   private PendingIntent alarmIntent;
+
+  public UpdateService() {
+    super("com.mobiled2.earthquake.UpdateService");
+  }
+
+  public UpdateService(String name) {
+    super(name);
+  }
 
   @Nullable
   @Override
@@ -51,7 +60,7 @@ public class UpdateService extends Service {
   }
 
   @Override
-  public int onStartCommand(Intent intent, int flags, int startId) {
+  protected void onHandleIntent(Intent intent) {
     SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
     int updateFreq = Integer.parseInt(prefs.getString(PreferencesActivity.PREF_UPDATE_FREQ, "60"));
 
@@ -61,14 +70,7 @@ public class UpdateService extends Service {
       alarmManager.cancel(alarmIntent);
     }
 
-    new Thread(new Runnable() {
-      @Override
-      public void run() {
-        refreshEarthquakes();
-      }
-    }).start();
-
-    return Service.START_NOT_STICKY;
+    refreshEarthquakes();
   }
 
   public void refreshEarthquakes() {
@@ -112,8 +114,6 @@ public class UpdateService extends Service {
       Log.d(TAG, "ParserConfigurationException");
     } catch (SAXException e) {
       Log.d(TAG, "SAXException");
-    } finally {
-      stopSelf();
     }
   }
 

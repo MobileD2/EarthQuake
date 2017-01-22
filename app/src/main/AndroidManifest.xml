@@ -48,6 +48,9 @@
       android:name=".ContentProvider"
       android:exported="false"/>
 
+    <service android:name=".UpdateService"
+             android:enabled="true"/>
+
     <meta-data android:name="android.app.default_searchable"
                android:value=".SearchActivity"/>
 

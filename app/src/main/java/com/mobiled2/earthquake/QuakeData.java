@@ -9,13 +9,15 @@ class QuakeData {
   private String details;
   private double latitude;
   private double longitude;
+  private double depth;
   private double magnitude;
 
-  QuakeData(Date date, String details, double latitude, double longitude, double magnitude) {
+  QuakeData(Date date, String details, double latitude, double longitude, double depth, double magnitude) {
     this.date = date;
     this.details = details;
     this.latitude = latitude;
     this.longitude = longitude;
+    this.depth = depth;
     this.magnitude = magnitude;
   }
 
@@ -38,6 +40,10 @@ class QuakeData {
 
   double getLongitude() {
     return longitude;
+  }
+
+  double getDepth() {
+    return depth;
   }
 
   double getMagnitude() {

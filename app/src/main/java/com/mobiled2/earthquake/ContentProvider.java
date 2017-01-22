@@ -24,8 +24,9 @@ public class ContentProvider extends android.content.ContentProvider {
   public static final String KEY_DATE = "date";
   public static final String KEY_DETAILS = "details";
   public static final String KEY_SUMMARY = "summary";
-  public static final String KEY_LOCATION_LATITUDE = "latitude";
-  public static final String KEY_LOCATION_LONGITUDE = "longitude";
+  public static final String KEY_LATITUDE = "latitude";
+  public static final String KEY_LONGITUDE = "longitude";
+  public static final String KEY_DEPTH = "depth";
   public static final String KEY_MAGNITUDE = "magnitude";
 
   private static final int QUAKES = 1;
@@ -166,7 +167,7 @@ public class ContentProvider extends android.content.ContentProvider {
 
   private static class DatabaseHelper extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "earthquakes.db";
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2;
     private static final String EARTHQUAKE_TABLE = "earthquakes";
 
     private static final String TAG = "EARTHQUAKE_PROVIDER";
@@ -186,8 +187,9 @@ public class ContentProvider extends android.content.ContentProvider {
           KEY_DATE + " INTEGER, " +
           KEY_DETAILS + " TEXT, " +
           KEY_SUMMARY + " TEXT, " +
-          KEY_LOCATION_LATITUDE + " FLOAT, " +
-          KEY_LOCATION_LONGITUDE + " FLOAT, " +
+          KEY_LATITUDE + " FLOAT, " +
+          KEY_LONGITUDE + " FLOAT, " +
+          KEY_DEPTH + " FLOAT, " +
           KEY_MAGNITUDE + " FLOAT" +
         ");"
       );

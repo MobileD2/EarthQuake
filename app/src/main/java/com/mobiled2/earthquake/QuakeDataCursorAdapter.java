@@ -15,8 +15,10 @@ class QuakeDataCursorAdapter extends SimpleCursorAdapter {
 
   @Override
   public void setViewText(TextView view, String text) {
-    if (view.getId() == R.id.date) {
-      text = new SimpleDateFormat("dd-MM-yyyy HH:mm", Locale.getDefault()).format(Long.valueOf(text));
+    switch(view.getId()) {
+      case R.id.date:
+        text = new SimpleDateFormat("dd-MM-yyyy HH:mm", Locale.getDefault()).format(Long.valueOf(text));
+      break;
     }
 
     view.setText(text);

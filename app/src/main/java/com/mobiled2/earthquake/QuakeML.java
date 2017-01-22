@@ -86,6 +86,12 @@ class QuakeML {
       return null;
     }
 
+    String depth = parseStringNodeList(originEl.getElementsByTagName("depth"));
+
+    if (depth == null) {
+      return null;
+    }
+
     NodeList magnitudeNodeList = entry.getElementsByTagName("magnitude");
 
     if (magnitudeNodeList == null) {
@@ -113,7 +119,7 @@ class QuakeML {
       Log.d(TAG, "Date parsing exception", e);
     }
 
-    return new QuakeData(date, details, Double.parseDouble(latitude), Double.parseDouble(longitude), Double.parseDouble(magnitude));
+    return new QuakeData(date, details, Double.parseDouble(latitude), Double.parseDouble(longitude), Double.parseDouble(depth), Double.parseDouble(magnitude));
   }
 
   private String parseStringNodeList(NodeList entry) {

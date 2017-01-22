@@ -129,8 +129,9 @@ public class UpdateService extends IntentService {
           values.put(ContentProvider.KEY_DATE, quake.getDate().getTime());
           values.put(ContentProvider.KEY_DETAILS, quake.getDetails());
           values.put(ContentProvider.KEY_SUMMARY, quake.toString());
-          values.put(ContentProvider.KEY_LOCATION_LATITUDE, quake.getLatitude());
-          values.put(ContentProvider.KEY_LOCATION_LONGITUDE, quake.getLongitude());
+          values.put(ContentProvider.KEY_LATITUDE, quake.getLatitude());
+          values.put(ContentProvider.KEY_LONGITUDE, quake.getLongitude());
+          values.put(ContentProvider.KEY_DEPTH, quake.getDepth());
           values.put(ContentProvider.KEY_MAGNITUDE, quake.getMagnitude());
 
           contentResolver.insert(ContentProvider.CONTENT_URI, values);

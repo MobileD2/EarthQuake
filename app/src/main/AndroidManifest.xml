@@ -51,6 +51,13 @@
     <service android:name=".UpdateService"
              android:enabled="true"/>
 
+    <receiver android:name=".AlarmReceiver"
+              android:exported="false">
+      <intent-filter>
+        <action android:name="com.mobiled2.earthquake.ACTION_REFRESH_EARTHQUAKE_ALARM"/>
+      </intent-filter>
+    </receiver>
+
     <meta-data android:name="android.app.default_searchable"
                android:value=".SearchActivity"/>
 

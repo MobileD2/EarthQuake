@@ -3,7 +3,6 @@ package com.mobiled2.earthquake;
 import android.app.SearchManager;
 import android.app.SearchableInfo;
 import android.content.Context;
-import android.support.v4.app.FragmentManager;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
@@ -64,16 +63,7 @@ public class MainActivity extends AppCompatActivity {
     if (requestCode == SHOW_PREFERENCES) {
       updateFromPreferences();
 
-      FragmentManager fm = getSupportFragmentManager();
-      final ListFragment listFragment = (ListFragment)fm.findFragmentById(R.id.ListFragment);
-      Thread t = new Thread(new Runnable() {
-        @Override
-        public void run() {
-          listFragment.refreshEarthquakes();
-        }
-      });
-
-      t.start();
+      ((ListFragment)getSupportFragmentManager().findFragmentById(R.id.ListFragment)).refreshEarthquakes();
     }
   }
 

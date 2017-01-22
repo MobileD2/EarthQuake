@@ -1,6 +1,5 @@
 package com.mobiled2.earthquake;
 
-import android.location.Location;
 import android.util.Log;
 
 import org.w3c.dom.Element;
@@ -14,9 +13,9 @@ import java.util.GregorianCalendar;
 import java.util.Locale;
 
 class QuakeML {
-  private static final String TAG = "EARTHQUAKE";
+  private static final String TAG = "EARTHQUAKE_QUAKEML";
 
-  Quake parse(Element entry) {
+  QuakeData parse(Element entry) {
     if (entry == null) {
       return null;
     }
@@ -105,21 +104,16 @@ class QuakeML {
       return null;
     }
 
-    Date qdate = new GregorianCalendar(0, 0, 0).getTime();
+    Date date = new GregorianCalendar(0, 0, 0).getTime();
     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'hh:mm:ss.SSS'Z'", Locale.getDefault());
 
     try {
-      qdate = sdf.parse(time);
+      date = sdf.parse(time);
     } catch (ParseException e) {
       Log.d(TAG, "Date parsing exception", e);
     }
 
-    Location location = new Location("dummyGPS");
-
-    location.setLongitude(Double.parseDouble(longitude));
-    location.setLatitude(Double.parseDouble(latitude));
-
-    return new Quake(qdate, details, location, Double.parseDouble(magnitude));
+    return new QuakeData(date, details, Double.parseDouble(latitude), Double.parseDouble(longitude), Double.parseDouble(magnitude));
   }
 
   private String parseStringNodeList(NodeList entry) {

@@ -8,7 +8,6 @@ import android.os.Handler;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
-import android.support.v4.widget.SimpleCursorAdapter;
 import android.util.Log;
 
 import org.w3c.dom.Document;
@@ -31,7 +30,7 @@ public class ListFragment extends android.support.v4.app.ListFragment implements
   private static final String TAG = "EARTHQUAKE_FRAGMENT";
   private static final int RECORDS_COUNT = 100;
 
-  SimpleCursorAdapter adapter;
+  QuakeDataCursorAdapter adapter;
 
   private Handler handler = new Handler();
 
@@ -39,7 +38,7 @@ public class ListFragment extends android.support.v4.app.ListFragment implements
   public void onActivityCreated(Bundle savedInstanceState) {
     super.onActivityCreated(savedInstanceState);
 
-    adapter = new SimpleCursorAdapter(getActivity(), android.R.layout.simple_list_item_1, null, new String[] { ContentProvider.KEY_SUMMARY }, new int[] { android.R.id.text1 }, 0);
+    adapter = new QuakeDataCursorAdapter(getActivity(), R.layout.quake_data_list_item, null, new String[] { ContentProvider.KEY_DATE, ContentProvider.KEY_MAGNITUDE, ContentProvider.KEY_DETAILS }, new int[] { R.id.date, R.id.magnitude, R.id.details }, 0);
     setListAdapter(adapter);
 
     getLoaderManager().initLoader(0, null, this);
@@ -85,7 +84,7 @@ public class ListFragment extends android.support.v4.app.ListFragment implements
 
         if (nl.getLength() > 0) {
           for (int i = 0; i < nl.getLength(); ++i) {
-            final Quake quake = new QuakeML().parse((Element)nl.item(i));
+            final QuakeData quake = new QuakeML().parse((Element)nl.item(i));
 
             if (quake != null) {
               handler.post(new Runnable() {
@@ -110,21 +109,21 @@ public class ListFragment extends android.support.v4.app.ListFragment implements
     }
   }
 
-  private void addNewQuake(Quake _quake) {
+  private void addNewQuake(QuakeData quake) {
     ContentResolver contentResolver = getActivity().getContentResolver();
-    Cursor cursor = contentResolver.query(ContentProvider.CONTENT_URI, null, ContentProvider.KEY_DATE + "=" + _quake.getDate().getTime(), null, null);
+    Cursor cursor = contentResolver.query(ContentProvider.CONTENT_URI, null, ContentProvider.KEY_DATE + "=" + quake.getDate().getTime(), null, null);
 
     if (cursor != null) {
       try {
         if (cursor.getCount() == 0) {
           ContentValues values = new ContentValues();
 
-          values.put(ContentProvider.KEY_DATE, _quake.getDate().getTime());
-          values.put(ContentProvider.KEY_DETAILS, _quake.getDetails());
-          values.put(ContentProvider.KEY_SUMMARY, _quake.toString());
-          values.put(ContentProvider.KEY_LOCATION_LATITUDE, _quake.getLocation().getLatitude());
-          values.put(ContentProvider.KEY_LOCATION_LONGITUDE, _quake.getLocation().getLongitude());
-          values.put(ContentProvider.KEY_MAGNITUDE, _quake.getMagnitude());
+          values.put(ContentProvider.KEY_DATE, quake.getDate().getTime());
+          values.put(ContentProvider.KEY_DETAILS, quake.getDetails());
+          values.put(ContentProvider.KEY_SUMMARY, quake.toString());
+          values.put(ContentProvider.KEY_LOCATION_LATITUDE, quake.getLatitude());
+          values.put(ContentProvider.KEY_LOCATION_LONGITUDE, quake.getLongitude());
+          values.put(ContentProvider.KEY_MAGNITUDE, quake.getMagnitude());
 
           contentResolver.insert(ContentProvider.CONTENT_URI, values);
         }
@@ -140,7 +139,9 @@ public class ListFragment extends android.support.v4.app.ListFragment implements
 
     String[] projection = new String[] {
       ContentProvider.KEY_ID,
-      ContentProvider.KEY_SUMMARY
+      ContentProvider.KEY_DATE,
+      ContentProvider.KEY_MAGNITUDE,
+      ContentProvider.KEY_DETAILS
     };
 
     String selection = ContentProvider.KEY_MAGNITUDE + " > " + mainActivity.minimumMagnitude;

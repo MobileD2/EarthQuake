@@ -8,20 +8,19 @@ import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
-import android.support.v4.widget.SimpleCursorAdapter;
 
 public class SearchFragment extends ListFragment implements LoaderManager.LoaderCallbacks<Cursor> {
   public static final String QUERY_EXTRA_KEY = "QUERY_EXTRA_KEY";
 
   private static final String TAG = "SEARCH_FRAGMENT";
 
-  SimpleCursorAdapter adapter;
+  QuakeDataCursorAdapter adapter;
 
   @Override
   public void onActivityCreated(Bundle savedInstanceState) {
     super.onActivityCreated(savedInstanceState);
 
-    adapter = new SimpleCursorAdapter(getActivity(), android.R.layout.simple_list_item_1, null, new String[] { ContentProvider.KEY_SUMMARY }, new int[] { android.R.id.text1 }, 0);
+    adapter = new QuakeDataCursorAdapter(getActivity(), R.layout.quake_data_list_item, null, new String[] { ContentProvider.KEY_DATE, ContentProvider.KEY_MAGNITUDE, ContentProvider.KEY_DETAILS }, new int[] { R.id.date, R.id.magnitude, R.id.details }, 0);
     setListAdapter(adapter);
 
     getLoaderManager().initLoader(0, null, this);
@@ -39,6 +38,9 @@ public class SearchFragment extends ListFragment implements LoaderManager.Loader
 
     String[] projection = {
       ContentProvider.KEY_ID,
+      ContentProvider.KEY_DATE,
+      ContentProvider.KEY_MAGNITUDE,
+      ContentProvider.KEY_DETAILS,
       ContentProvider.KEY_SUMMARY
     };
 

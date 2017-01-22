@@ -1,22 +1,22 @@
 package com.mobiled2.earthquake;
 
-import android.location.Location;
-
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-class Quake {
+class QuakeData {
   private Date date;
   private String details;
-  private Location location;
+  private double latitude;
+  private double longitude;
   private double magnitude;
 
-  Quake(Date _d, String _det, Location _loc, double _mag) {
-    date = _d;
-    details = _det;
-    location = _loc;
-    magnitude = _mag;
+  QuakeData(Date date, String details, double latitude, double longitude, double magnitude) {
+    this.date = date;
+    this.details = details;
+    this.latitude = latitude;
+    this.longitude = longitude;
+    this.magnitude = magnitude;
   }
 
   @Override
@@ -32,8 +32,12 @@ class Quake {
     return details;
   }
 
-  Location getLocation() {
-    return location;
+  double getLatitude() {
+    return latitude;
+  }
+
+  double getLongitude() {
+    return longitude;
   }
 
   double getMagnitude() {

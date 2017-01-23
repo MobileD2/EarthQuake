@@ -8,6 +8,11 @@ import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.view.View;
+import android.widget.ListView;
+
+import java.text.SimpleDateFormat;
+import java.util.Locale;
 
 public class SearchFragment extends ListFragment implements LoaderManager.LoaderCallbacks<Cursor> {
   public static final String QUERY_EXTRA_KEY = "QUERY_EXTRA_KEY";
@@ -29,6 +34,23 @@ public class SearchFragment extends ListFragment implements LoaderManager.Loader
   }
 
   @Override
+  public void onListItemClick(ListView listView, View view, int position, long id) {
+    super.onListItemClick(listView, view, position, id);
+
+    Cursor cursor = (Cursor)getListAdapter().getItem(position);
+    Intent intent = new Intent(getActivity(), QuakeDetailsActivity.class);
+
+    intent.putExtra(ContentProvider.KEY_DATE, new SimpleDateFormat("dd-MM-yyyy HH:mm", Locale.getDefault()).format(cursor.getLong(cursor.getColumnIndex(ContentProvider.KEY_DATE))));
+    intent.putExtra(ContentProvider.KEY_DETAILS, cursor.getString(cursor.getColumnIndex(ContentProvider.KEY_DETAILS)));
+    intent.putExtra(ContentProvider.KEY_MAGNITUDE, String.valueOf(cursor.getDouble(cursor.getColumnIndex(ContentProvider.KEY_MAGNITUDE))));
+    intent.putExtra(ContentProvider.KEY_LATITUDE, String.valueOf(cursor.getDouble(cursor.getColumnIndex(ContentProvider.KEY_LATITUDE))));
+    intent.putExtra(ContentProvider.KEY_LONGITUDE, String.valueOf(cursor.getDouble(cursor.getColumnIndex(ContentProvider.KEY_LONGITUDE))));
+    intent.putExtra(ContentProvider.KEY_DEPTH, String.valueOf(cursor.getDouble(cursor.getColumnIndex(ContentProvider.KEY_DEPTH))));
+
+    startActivity(intent);
+  }
+
+  @Override
   public Loader<Cursor> onCreateLoader(int id, Bundle args) {
     String query = "";
 
@@ -41,6 +63,9 @@ public class SearchFragment extends ListFragment implements LoaderManager.Loader
       ContentProvider.KEY_DATE,
       ContentProvider.KEY_MAGNITUDE,
       ContentProvider.KEY_DETAILS,
+      ContentProvider.KEY_LATITUDE,
+      ContentProvider.KEY_LONGITUDE,
+      ContentProvider.KEY_DEPTH,
       ContentProvider.KEY_SUMMARY
     };
 

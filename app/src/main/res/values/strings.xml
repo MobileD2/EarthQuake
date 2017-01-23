@@ -27,4 +27,14 @@
   <string name="menu_preferences">Preferences</string>
 
   <string name="search_description">Search Earthquake Locations</string>
+
+  <string name="quake_details">Quake Details</string>
+
+  <string name="details_date">Date</string>
+  <string name="details_magnitude">Magnitude</string>
+  <string name="details_details">Details</string>
+  <string name="details_latitude">Latitude</string>
+  <string name="details_longitude">Longitude</string>
+  <string name="details_depth">Depth</string>
+
 </resources>

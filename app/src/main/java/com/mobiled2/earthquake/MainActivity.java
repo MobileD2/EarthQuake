@@ -1,11 +1,15 @@
 package com.mobiled2.earthquake;
 
+import android.app.SearchManager;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.support.design.widget.TabLayout;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
+import android.support.v7.widget.SearchView;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -48,6 +52,7 @@ public class MainActivity extends ToolbarActivity {
     super.onCreateOptionsMenu(menu);
 
     getMenuInflater().inflate(R.menu.main_menu, menu);
+    initSearchView(menu);
 
     return true;
   }
@@ -118,5 +123,12 @@ public class MainActivity extends ToolbarActivity {
 
       }
     });
+  }
+
+  private void initSearchView(Menu menu) {
+    SearchManager searchManager = (SearchManager)getSystemService(Context.SEARCH_SERVICE);
+    SearchView searchView = (SearchView)MenuItemCompat.getActionView(menu.findItem(R.id.menu_search));
+
+    searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
   }
 }

@@ -47,7 +47,7 @@ public class MainActivity extends ToolbarActivity {
   public boolean onCreateOptionsMenu(Menu menu) {
     super.onCreateOptionsMenu(menu);
 
-    menu.add(0, MENU_PREFERENCES, Menu.NONE, R.string.menu_preferences);
+    getMenuInflater().inflate(R.menu.main_menu, menu);
 
     return true;
   }
@@ -57,14 +57,16 @@ public class MainActivity extends ToolbarActivity {
     super.onOptionsItemSelected(item);
 
     switch(item.getItemId()) {
-      case (MENU_PREFERENCES): {
+      case (R.id.menu_preferences): {
         startActivityForResult(new Intent(this, PreferencesActivity.class), SHOW_PREFERENCES);
-
         return true;
       }
+      case (R.id.menu_refresh): {
+        startService(new Intent(this, UpdateService.class));
+        return true;
+      }
+      default: return false;
     }
-
-    return false;
   }
 
   @Override

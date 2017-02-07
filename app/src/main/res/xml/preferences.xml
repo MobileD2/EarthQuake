@@ -22,4 +22,9 @@
                   android:dialogTitle="Magnitude"
                   android:defaultValue="0"/>
 
+  <CheckBoxPreference android:key="PREF_NOTIFICATION"
+                      android:title="Notification"
+                      android:summary="Select to turn on notifications when earthquake is occured"
+                      android:defaultValue="true"/>
+
 </PreferenceScreen>

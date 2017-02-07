@@ -10,7 +10,8 @@ public class PreferencesActivity extends PreferenceActivity {
   public static final String PREF_AUTO_UPDATE = "PREF_AUTO_UPDATE";
   public static final String PREF_MIN_MAG = "PREF_MIN_MAG";
   public static final String PREF_UPDATE_FREQ = "PREF_UPDATE_FREQ";
-  public static final String PREF_ACTION_BAR_INDEX = "ACTION_BAR_INDEX";
+  public static final String PREF_ACTION_BAR_INDEX = "PREF_ACTION_BAR_INDEX";
+  public static final String PREF_NOTIFICATION = "PREF_NOTIFICATION";
 
   @TargetApi(Build.VERSION_CODES.HONEYCOMB)
   public static class PreferencesFragment extends PreferenceFragment {

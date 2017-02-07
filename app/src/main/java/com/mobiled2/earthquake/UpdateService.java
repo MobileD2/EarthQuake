@@ -67,8 +67,9 @@ public class UpdateService extends IntentService {
     notificationBuilder = new NotificationCompat.Builder(this);
 
     notificationBuilder.setAutoCancel(true)
-      .setTicker("Earthquake detected")
-      .setSmallIcon(R.drawable.notification);
+      .setDefaults(NotificationCompat.DEFAULT_ALL)
+      .setSmallIcon(R.drawable.ic_notification)
+      .setTicker("Earthquake detected");
   }
 
   @Override
@@ -173,7 +174,7 @@ public class UpdateService extends IntentService {
 
       double vibrateLength = 100 * Math.exp(0.53 * quakeData.getMagnitude());
 
-      notificationBuilder.setVibrate(new long[]{100, 100, (long) vibrateLength});
+      notificationBuilder.setVibrate(new long[] { 100, 100, (long)vibrateLength });
 
       int color;
 
@@ -185,9 +186,9 @@ public class UpdateService extends IntentService {
         color = Color.RED;
       }
 
-      notificationBuilder.setLights(color, (int) vibrateLength, (int) vibrateLength);
+      notificationBuilder.setLights(color, (int)vibrateLength, (int)vibrateLength);
 
-      NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+      NotificationManager notificationManager = (NotificationManager)getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
 
       notificationManager.notify(NOTIFICATION_ID, notificationBuilder.build());
     }

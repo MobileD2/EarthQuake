@@ -36,6 +36,7 @@ public class UpdateService extends IntentService {
 
   private AlarmManager alarmManager;
   private PendingIntent alarmIntent;
+  private SharedPreferences prefs;
 
   private Notification notification;
 
@@ -58,12 +59,12 @@ public class UpdateService extends IntentService {
     super.onCreate();
     alarmManager = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
     alarmIntent = PendingIntent.getBroadcast(this, 0, new Intent(AlarmReceiver.ACTION_REFRESH_EARTHQUAKE_ALARM), 0);
+    prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
     notification = new Notification(this);
   }
 
   @Override
   protected void onHandleIntent(Intent intent) {
-    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
     int updateFreq = Integer.parseInt(prefs.getString(PreferencesActivity.PREF_UPDATE_FREQ, "60"));
 
     if (prefs.getBoolean(PreferencesActivity.PREF_AUTO_UPDATE, false)) {
@@ -137,7 +138,7 @@ public class UpdateService extends IntentService {
           values.put(ContentProvider.KEY_DEPTH, quakeData.getDepth());
           values.put(ContentProvider.KEY_MAGNITUDE, quakeData.getMagnitude());
 
-          if (PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getBoolean(PreferencesActivity.PREF_NOTIFICATION, false)) {
+          if (prefs.getBoolean(PreferencesActivity.PREF_NOTIFICATION, false)) {
             notification.send(quakeData);
           }
 

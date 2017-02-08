@@ -96,9 +96,10 @@ public class UpdateService extends IntentService {
         Element docEle = dom.getDocumentElement();
 
         NodeList nl = docEle.getElementsByTagName("event");
+        int listLength = nl.getLength();
 
-        if (nl.getLength() > 0) {
-          for (int i = 0; i < nl.getLength(); ++i) {
+        if (listLength > 0) {
+          for (int i = listLength - 1; i >= 0; --i) {
             final QuakeData quake = new QuakeML().parse((Element)nl.item(i));
 
             if (quake != null) {

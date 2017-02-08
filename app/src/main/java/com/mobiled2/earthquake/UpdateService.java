@@ -137,7 +137,9 @@ public class UpdateService extends IntentService {
           values.put(ContentProvider.KEY_DEPTH, quakeData.getDepth());
           values.put(ContentProvider.KEY_MAGNITUDE, quakeData.getMagnitude());
 
-          notification.send(quakeData);
+          if (PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getBoolean(PreferencesActivity.PREF_NOTIFICATION, false)) {
+            notification.send(quakeData);
+          }
 
           contentResolver.insert(ContentProvider.CONTENT_URI, values);
         }

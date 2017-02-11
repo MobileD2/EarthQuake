@@ -74,8 +74,11 @@ public class MainActivity extends ToolbarActivity {
   public void onActivityResult(int requestCode, int resultCode, Intent data) {
     super.onActivityResult(requestCode, resultCode, data);
 
-    if (requestCode == SHOW_PREFERENCES) {
-      startService(new Intent(this, UpdateService.class));
+    switch(requestCode) {
+      case (SHOW_PREFERENCES):
+        startService(new Intent(this, UpdateService.class));
+      break;
+      default: break;
     }
   }
 

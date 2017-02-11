@@ -36,13 +36,18 @@ public class ListFragment extends android.support.v4.app.ListFragment implements
     super.onActivityCreated(savedInstanceState);
 
     prefs = PreferenceManager.getDefaultSharedPreferences(context);
-
     adapter = new QuakeDataCursorAdapter(context, R.layout.quake_data_list_item, null, new String[] { ContentProvider.KEY_DATE, ContentProvider.KEY_MAGNITUDE, ContentProvider.KEY_DETAILS }, new int[] { R.id.date, R.id.magnitude, R.id.details }, 0);
+
     setListAdapter(adapter);
 
     getLoaderManager().initLoader(0, null, this);
+  }
 
-    refreshEarthquakes(context);
+  @Override
+  public void onStart() {
+    super.onStart();
+    getLoaderManager().restartLoader(0, null, ListFragment.this);
+    context.startService(new Intent(context, UpdateService.class));
   }
 
   @Override
@@ -90,10 +95,5 @@ public class ListFragment extends android.support.v4.app.ListFragment implements
   @Override
   public void onLoaderReset(Loader<Cursor> loader) {
     adapter.swapCursor(null);
-  }
-
-  private void refreshEarthquakes(Activity activity) {
-    getLoaderManager().restartLoader(0, null, ListFragment.this);
-    activity.startService(new Intent(activity, UpdateService.class));
   }
 }

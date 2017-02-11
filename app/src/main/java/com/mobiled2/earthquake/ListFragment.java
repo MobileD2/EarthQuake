@@ -3,8 +3,10 @@ package com.mobiled2.earthquake;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
@@ -19,6 +21,7 @@ public class ListFragment extends android.support.v4.app.ListFragment implements
   private static final String TAG = "EARTHQUAKE_FRAGMENT";
   private static final int RECORDS_COUNT = 100;
 
+  private SharedPreferences prefs;
   QuakeDataCursorAdapter adapter;
   Activity context;
 
@@ -31,6 +34,8 @@ public class ListFragment extends android.support.v4.app.ListFragment implements
   @Override
   public void onActivityCreated(Bundle savedInstanceState) {
     super.onActivityCreated(savedInstanceState);
+
+    prefs = PreferenceManager.getDefaultSharedPreferences(context);
 
     adapter = new QuakeDataCursorAdapter(context, R.layout.quake_data_list_item, null, new String[] { ContentProvider.KEY_DATE, ContentProvider.KEY_MAGNITUDE, ContentProvider.KEY_DETAILS }, new int[] { R.id.date, R.id.magnitude, R.id.details }, 0);
     setListAdapter(adapter);
@@ -59,7 +64,7 @@ public class ListFragment extends android.support.v4.app.ListFragment implements
 
   @Override
   public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-    MainActivity mainActivity = (MainActivity)context;
+    int minimumMagnitude = Integer.parseInt(prefs.getString(PreferencesActivity.PREF_MIN_MAG, "0"));
 
     String[] projection = new String[] {
       ContentProvider.KEY_ID,
@@ -71,7 +76,7 @@ public class ListFragment extends android.support.v4.app.ListFragment implements
       ContentProvider.KEY_DEPTH
     };
 
-    String selection = ContentProvider.KEY_MAGNITUDE + " > " + mainActivity.minimumMagnitude;
+    String selection = ContentProvider.KEY_MAGNITUDE + " > " + minimumMagnitude;
     String sortOrder = ContentProvider.KEY_DATE + " DESC LIMIT " + RECORDS_COUNT;
 
     return new CursorLoader(context, ContentProvider.CONTENT_URI, projection, selection, null, sortOrder);

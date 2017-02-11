@@ -22,18 +22,14 @@ public class MainActivity extends ToolbarActivity {
 
   private static final int SHOW_PREFERENCES = 1;
 
+  private SharedPreferences prefs;
   private ViewPager viewPager;
-
-  public int minimumMagnitude = 0;
-  public boolean autoUpdateChecked = false;
-  public int updateFreq = 0;
-  public int actionBarIndex = 0;
 
   @Override
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_main);
-    updateFromPreferences();
+    prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
     initTabLayout();
   }
 
@@ -79,18 +75,8 @@ public class MainActivity extends ToolbarActivity {
     super.onActivityResult(requestCode, resultCode, data);
 
     if (requestCode == SHOW_PREFERENCES) {
-      updateFromPreferences();
       startService(new Intent(this, UpdateService.class));
     }
-  }
-
-  private void updateFromPreferences() {
-    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-
-    autoUpdateChecked = prefs.getBoolean(PreferencesActivity.PREF_AUTO_UPDATE, false);
-    minimumMagnitude = Integer.parseInt(prefs.getString(PreferencesActivity.PREF_MIN_MAG, "0"));
-    updateFreq = Integer.parseInt(prefs.getString(PreferencesActivity.PREF_UPDATE_FREQ, "-1"));
-    actionBarIndex = Integer.parseInt(prefs.getString(PreferencesActivity.PREF_ACTION_BAR_INDEX, "0"));
   }
 
   private void initTabLayout() {
@@ -105,7 +91,7 @@ public class MainActivity extends ToolbarActivity {
     viewPager = (ViewPager)findViewById(R.id.pager);
     viewPager.setAdapter(pagerAdapter);
     viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
-    viewPager.setCurrentItem(actionBarIndex);
+    viewPager.setCurrentItem(Integer.parseInt(prefs.getString(PreferencesActivity.PREF_ACTION_BAR_INDEX, "0")));
 
     tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener(){
       @Override

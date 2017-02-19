@@ -1,8 +1,6 @@
 <resources>
   <string name="app_name">EarthQuake</string>
 
-  <string name="tag">EARTHQUAKE</string>
-
   <string name="quake_4.5_hour_feed">http://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/4.5_hour.quakeml</string>
   <string name="quake_2.5_hour_feed">http://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/2.5_hour.quakeml</string>
   <string name="quake_1.0_hour_feed">http://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/1.0_hour.quakeml</string>
@@ -42,4 +40,7 @@
 
   <string name="tab_list">List</string>
   <string name="tab_map">Map</string>
+
+  <string name="google_maps_v2_not_available">Google Maps V2 not available</string>
+  <string name="google_play_services_out_of_date">Google Play services out of date</string>
 </resources>

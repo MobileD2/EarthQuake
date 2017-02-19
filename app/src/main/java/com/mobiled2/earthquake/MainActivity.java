@@ -4,7 +4,10 @@ import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.FeatureInfo;
+import android.content.pm.PackageManager;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.ViewPager;
@@ -13,6 +16,10 @@ import android.support.v7.widget.SearchView;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
+
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
 
 public class MainActivity extends ToolbarActivity {
   private static final String TAG = "EARTHQUAKE_ACTIVITY";
@@ -28,9 +35,12 @@ public class MainActivity extends ToolbarActivity {
   @Override
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    setContentView(R.layout.activity_main);
-    prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-    initTabLayout();
+
+    if (initGoogleApi()) {
+      setContentView(R.layout.activity_main);
+      prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+      initTabLayout();
+    }
   }
 
   @Override
@@ -80,6 +90,50 @@ public class MainActivity extends ToolbarActivity {
       break;
       default: break;
     }
+  }
+
+  protected boolean initGoogleApi() {
+    GoogleApiAvailability checker = GoogleApiAvailability.getInstance();
+    int status = checker.isGooglePlayServicesAvailable(this);
+
+    if (status == ConnectionResult.SUCCESS) {
+      if (getVersionFromPackageManager(this) >= 2) {
+        return true;
+      } else {
+        Toast.makeText(this, R.string.google_maps_v2_not_available, Toast.LENGTH_LONG).show();
+        finish();
+      }
+    }
+    else if (checker.isUserResolvableError(status)) {
+      Toast.makeText(this, R.string.google_play_services_out_of_date, Toast.LENGTH_LONG).show();
+      finish();
+    }
+    else {
+      Toast.makeText(this, R.string.google_maps_v2_not_available, Toast.LENGTH_LONG).show();
+      finish();
+    }
+
+    return false;
+  }
+
+  private static int getVersionFromPackageManager(Context context) {
+    PackageManager packageManager = context.getPackageManager();
+    FeatureInfo[] featureInfos = packageManager.getSystemAvailableFeatures();
+
+    if (featureInfos != null && featureInfos.length > 0) {
+      for (FeatureInfo featureInfo : featureInfos) {
+        if (featureInfo.name == null) {
+          if (featureInfo.reqGlEsVersion != FeatureInfo.GL_ES_VERSION_UNDEFINED) {
+            return (featureInfo.reqGlEsVersion & 0xffff0000) >> 16;
+          }
+          else {
+            return 1;
+          }
+        }
+      }
+    }
+
+    return 1;
   }
 
   private void initTabLayout() {

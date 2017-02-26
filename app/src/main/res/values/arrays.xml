@@ -45,4 +45,94 @@
     <item>9</item>
   </string-array>
 
+  <string-array name="records_count_options">
+    <item>Last 10</item>
+    <item>Last 100</item>
+    <item>Last 200</item>
+    <item>Last 500</item>
+    <item>Last 1000</item>
+    <item>Today</item>
+    <item>Last Week</item>
+    <item>Last Month</item>
+    <item>Last 3 Months</item>
+    <item>Last 6 Months</item>
+    <item>Last Year</item>
+    <item>All</item>
+  </string-array>
+
+  <string-array name="records_count_values">
+    <item>10</item>
+    <item>100</item>
+    <item>200</item>
+    <item>500</item>
+    <item>1000</item>
+    <item>-1</item>
+    <item>-2</item>
+    <item>-3</item>
+    <item>-4</item>
+    <item>-5</item>
+    <item>-6</item>
+    <item>0</item>
+  </string-array>
+
+  <string-array name="clustering_color_options">
+    <item>Min</item>
+    <item>Mean</item>
+    <item>Max</item>
+  </string-array>
+
+  <string-array name="clustering_color_values">
+    <item>Min</item>
+    <item>Mean</item>
+    <item>Max</item>
+  </string-array>
+
+  <string-array name="zoom_when_list_item_clicked_options">
+    <item>2</item>
+    <item>3</item>
+    <item>4</item>
+    <item>5</item>
+    <item>6</item>
+    <item>7</item>
+    <item>8</item>
+    <item>9</item>
+    <item>10</item>
+    <item>11</item>
+    <item>12</item>
+    <item>13</item>
+    <item>14</item>
+    <item>16</item>
+    <item>17</item>
+    <item>18</item>
+    <item>19</item>
+    <item>20</item>
+    <item>21</item>
+    <item>22</item>
+    <item>Max</item>
+  </string-array>
+
+  <string-array name="zoom_when_list_item_clicked_values">
+    <item>2</item>
+    <item>3</item>
+    <item>4</item>
+    <item>5</item>
+    <item>6</item>
+    <item>7</item>
+    <item>8</item>
+    <item>9</item>
+    <item>10</item>
+    <item>11</item>
+    <item>12</item>
+    <item>13</item>
+    <item>14</item>
+    <item>16</item>
+    <item>17</item>
+    <item>18</item>
+    <item>19</item>
+    <item>20</item>
+    <item>21</item>
+    <item>22</item>
+    <item>-1</item>
+  </string-array>
+
 </resources>

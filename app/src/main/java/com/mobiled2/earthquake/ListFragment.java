@@ -1,6 +1,5 @@
 package com.mobiled2.earthquake;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -10,25 +9,28 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.ListView;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
-public class ListFragment extends android.support.v4.app.ListFragment implements LoaderManager.LoaderCallbacks<Cursor> {
-  private static final String TAG = "EARTHQUAKE_FRAGMENT";
-  private static final int RECORDS_COUNT = 100;
+public class ListFragment extends android.support.v4.app.ListFragment implements IFragmentCallback, LoaderManager.LoaderCallbacks<Cursor> {
+  private static final String TAG = "LIST_FRAGMENT";
 
   private SharedPreferences prefs;
   QuakeDataCursorAdapter adapter;
-  Activity context;
+  AppCompatActivity context;
 
   @Override
   public void onAttach (Context context){
     super.onAttach(context);
-    this.context = (Activity)context;
+    this.context = (AppCompatActivity)context;
   }
 
   @Override
@@ -55,7 +57,7 @@ public class ListFragment extends android.support.v4.app.ListFragment implements
     super.onListItemClick(listView, view, position, id);
 
     Cursor cursor = (Cursor)getListAdapter().getItem(position);
-    Intent intent = new Intent(getActivity(), QuakeDetailsActivity.class);
+    Intent intent = new Intent();
 
     intent.putExtra(ContentProvider.KEY_DATE, new SimpleDateFormat("dd-MM-yyyy HH:mm", Locale.getDefault()).format(cursor.getLong(cursor.getColumnIndex(ContentProvider.KEY_DATE))));
     intent.putExtra(ContentProvider.KEY_DETAILS, cursor.getString(cursor.getColumnIndex(ContentProvider.KEY_DETAILS)));
@@ -64,12 +66,13 @@ public class ListFragment extends android.support.v4.app.ListFragment implements
     intent.putExtra(ContentProvider.KEY_LONGITUDE, String.valueOf(cursor.getDouble(cursor.getColumnIndex(ContentProvider.KEY_LONGITUDE))));
     intent.putExtra(ContentProvider.KEY_DEPTH, String.valueOf(cursor.getDouble(cursor.getColumnIndex(ContentProvider.KEY_DEPTH))));
 
-    startActivity(intent);
+    ((IFragmentCallback)context).onFragmentClick(intent);
   }
 
   @Override
   public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-    int minimumMagnitude = Integer.parseInt(prefs.getString(PreferencesActivity.PREF_MIN_MAG, "0"));
+    float minimumMagnitude = Float.parseFloat(prefs.getString(PreferencesActivity.PREF_MIN_MAG, "-1"));
+    int recordsCount = Integer.parseInt(prefs.getString(PreferencesActivity.PREF_RECORDS_COUNT, "-1"));
 
     String[] projection = new String[] {
       ContentProvider.KEY_ID,
@@ -81,10 +84,42 @@ public class ListFragment extends android.support.v4.app.ListFragment implements
       ContentProvider.KEY_DEPTH
     };
 
-    String selection = ContentProvider.KEY_MAGNITUDE + " > " + minimumMagnitude;
-    String sortOrder = ContentProvider.KEY_DATE + " DESC LIMIT " + RECORDS_COUNT;
+    List<String> selection = new ArrayList<>();
 
-    return new CursorLoader(context, ContentProvider.CONTENT_URI, projection, selection, null, sortOrder);
+    if (minimumMagnitude >= 0) {
+      selection.add('(' + ContentProvider.KEY_MAGNITUDE + " > " + minimumMagnitude + ')');
+    }
+
+    if (recordsCount < 0) {
+      switch (recordsCount) {
+        case -1:
+          selection.add("(" + ContentProvider.KEY_DATE + " >= STRFTIME('%s000', DATE('NOW'), 'UTC'))");
+        break;
+        case -2:
+          selection.add("(" + ContentProvider.KEY_DATE + " >= STRFTIME('%s000', DATE('NOW', '-7 DAYS'), 'UTC'))");
+        break;
+        case -3:
+          selection.add("(" + ContentProvider.KEY_DATE + " >= STRFTIME('%s000', DATE('NOW', '-1 MONTH'), 'UTC'))");
+        break;
+        case -4:
+          selection.add("(" + ContentProvider.KEY_DATE + " >= STRFTIME('%s000', DATE('NOW', '-3 MONTHS'), 'UTC'))");
+        break;
+        case -5:
+          selection.add("(" + ContentProvider.KEY_DATE + " >= STRFTIME('%s000', DATE('NOW', '-6 MONTHS'), 'UTC'))");
+        break;
+        case -6:
+          selection.add("(" + ContentProvider.KEY_DATE + " >= STRFTIME('%s000', DATE('NOW', '-1 YEAR'), 'UTC'))");
+        break;
+      }
+    }
+
+    String sortOrder = ContentProvider.KEY_DATE + " DESC";
+
+    if (recordsCount > 0) {
+      sortOrder += " LIMIT " + recordsCount;
+    }
+
+    return new CursorLoader(context, ContentProvider.CONTENT_URI, projection, TextUtils.join(" AND ", selection), null, sortOrder);
   }
 
   @Override
@@ -95,5 +130,10 @@ public class ListFragment extends android.support.v4.app.ListFragment implements
   @Override
   public void onLoaderReset(Loader<Cursor> loader) {
     adapter.swapCursor(null);
+  }
+
+  @Override
+  public void onFragmentClick(Intent intent) {
+
   }
 }

@@ -5,6 +5,9 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 
 class PagerAdapter extends FragmentStatePagerAdapter {
+  static final int LIST_POSITION = 0;
+  static final int MAP_POSITION = 1;
+
   private int pageCount;
 
   PagerAdapter(FragmentManager fm, int pageCount) {
@@ -15,8 +18,8 @@ class PagerAdapter extends FragmentStatePagerAdapter {
   @Override
   public Fragment getItem(int position) {
     switch(position) {
-      case 0: return new ListFragment();
-      case 1: return new MapFragment();
+      case LIST_POSITION: return new ListFragment();
+      case MAP_POSITION: return new MapFragment();
       default: return null;
     }
   }

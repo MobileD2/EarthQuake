@@ -9,6 +9,9 @@ import android.content.pm.PackageManager;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
@@ -21,8 +24,15 @@ import android.widget.Toast;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 
-public class MainActivity extends ToolbarActivity {
+import static android.Manifest.permission.ACCESS_COARSE_LOCATION;
+import static android.Manifest.permission.ACCESS_FINE_LOCATION;
+
+public class MainActivity extends ToolbarActivity implements IFragmentCallback {
   private static final String TAG = "EARTHQUAKE_ACTIVITY";
+
+  private static final String STATE_IN_PERMISSION = "STATE_IN_PERMISSION";
+
+  public static final int REQUEST_PERMISSION_ACCESS_FINE_LOCATION = 1337;
 
   private static final int MENU_PREFERENCES = Menu.FIRST + 1;
   private static final int MENU_UPDATE = Menu.FIRST + 2;
@@ -30,25 +40,53 @@ public class MainActivity extends ToolbarActivity {
   private static final int SHOW_PREFERENCES = 1;
 
   private SharedPreferences prefs;
+
   private ViewPager viewPager;
+
+  private boolean isInPermission = false;
 
   @Override
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
 
-    if (initGoogleApi()) {
-      setContentView(R.layout.activity_main);
-      prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-      initTabLayout();
+    if (savedInstanceState != null) {
+      isInPermission = savedInstanceState.getBoolean(STATE_IN_PERMISSION, false);
+    }
+
+    onCreatePermitted(canGetLocation());
+  }
+
+  private boolean canGetLocation() {
+    return ContextCompat.checkSelfPermission(this, ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(this, ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED;
+  }
+
+  private void onCreatePermitted(boolean canGetLocation) {
+    if (canGetLocation) {
+      if (initGoogleApi()) {
+        setContentView(R.layout.activity_main);
+        prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        initTabLayout();
+      }
+    } else if (!isInPermission) {
+      isInPermission = true;
+      ActivityCompat.requestPermissions(this, new String[] {ACCESS_FINE_LOCATION}, REQUEST_PERMISSION_ACCESS_FINE_LOCATION);
     }
   }
 
   @Override
-  public void onStop() {
-    SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).edit();
+  protected void onSaveInstanceState(Bundle outState) {
+    super.onSaveInstanceState(outState);
+    outState.putBoolean(STATE_IN_PERMISSION, isInPermission);
+  }
 
-    editor.putString(PreferencesActivity.PREF_ACTION_BAR_INDEX, String.valueOf(viewPager.getCurrentItem()));
-    editor.apply();
+  @Override
+  public void onStop() {
+    if (!isInPermission) {
+      SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).edit();
+
+      editor.putString(PreferencesActivity.PREF_ACTION_BAR_INDEX, String.valueOf(viewPager.getCurrentItem()));
+      editor.apply();
+    }
 
     super.onStop();
   }
@@ -77,6 +115,19 @@ public class MainActivity extends ToolbarActivity {
         return true;
       }
       default: return false;
+    }
+  }
+
+  @Override
+  public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull int[] grantResults) {
+    switch (requestCode) {
+      case REQUEST_PERMISSION_ACCESS_FINE_LOCATION: {
+        if (canGetLocation()) {
+          onCreatePermitted(true);
+        } else {
+          finish();
+        }
+      }
     }
   }
 
@@ -143,12 +194,12 @@ public class MainActivity extends ToolbarActivity {
     tabLayout.addTab(tabLayout.newTab().setText(R.string.tab_map));
     tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
 
-    final PagerAdapter pagerAdapter = new PagerAdapter(getSupportFragmentManager(), tabLayout.getTabCount());
+    PagerAdapter pagerAdapter = new PagerAdapter(getSupportFragmentManager(), tabLayout.getTabCount());
 
     viewPager = (ViewPager)findViewById(R.id.pager);
     viewPager.setAdapter(pagerAdapter);
     viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
-    viewPager.setCurrentItem(Integer.parseInt(prefs.getString(PreferencesActivity.PREF_ACTION_BAR_INDEX, "0")));
+    viewPager.setCurrentItem(Integer.parseInt(prefs.getString(PreferencesActivity.PREF_ACTION_BAR_INDEX, String.valueOf(PagerAdapter.LIST_POSITION))));
 
     tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener(){
       @Override
@@ -173,5 +224,14 @@ public class MainActivity extends ToolbarActivity {
     SearchView searchView = (SearchView)MenuItemCompat.getActionView(menu.findItem(R.id.menu_search));
 
     searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+  }
+
+  @Override
+  public void onFragmentClick(Intent intent) {
+    viewPager.setCurrentItem(PagerAdapter.MAP_POSITION);
+
+    for (Fragment fragment : getSupportFragmentManager().getFragments()) {
+      ((IFragmentCallback)fragment).onFragmentClick(intent);
+    }
   }
 }

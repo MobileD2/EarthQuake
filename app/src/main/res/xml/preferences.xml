@@ -22,6 +22,30 @@
                   android:dialogTitle="Magnitude"
                   android:defaultValue="0"/>
 
+  <ListPreference android:key="PREF_RECORDS_COUNT"
+                  android:title="Records Count"
+                  android:summary="Select how many earthquakes to show"
+                  android:entries="@array/records_count_options"
+                  android:entryValues="@array/records_count_values"
+                  android:dialogTitle="Records Count"
+                  android:defaultValue="-1"/>
+
+  <ListPreference android:key="PREF_CLUSTERING_COLOR"
+                  android:title="Clustering Color"
+                  android:summary="Select clustering value for their color"
+                  android:entries="@array/clustering_color_options"
+                  android:entryValues="@array/clustering_color_values"
+                  android:dialogTitle="Clustering Color"
+                  android:defaultValue="Mean"/>
+
+  <ListPreference android:key="PREF_ZOOM_WHEN_ITEM_CLICKED"
+                  android:title="Zoom when item clicked"
+                  android:summary="Select zoom value to magnify when item in list clicked"
+                  android:entries="@array/zoom_when_list_item_clicked_options"
+                  android:entryValues="@array/zoom_when_list_item_clicked_values"
+                  android:dialogTitle="Zoom when item clicked"
+                  android:defaultValue="7"/>
+
   <CheckBoxPreference android:key="PREF_NOTIFICATION"
                       android:title="Notification"
                       android:summary="Select to turn on notifications when earthquake is occured"

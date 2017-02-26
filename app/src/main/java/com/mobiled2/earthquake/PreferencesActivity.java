@@ -10,6 +10,9 @@ public class PreferencesActivity extends PreferenceActivity {
   public static final String PREF_AUTO_UPDATE = "PREF_AUTO_UPDATE";
   public static final String PREF_MIN_MAG = "PREF_MIN_MAG";
   public static final String PREF_UPDATE_FREQ = "PREF_UPDATE_FREQ";
+  public static final String PREF_RECORDS_COUNT = "PREF_RECORDS_COUNT";
+  public static final String PREF_CLUSTERING_COLOR = "PREF_CLUSTERING_COLOR";
+  public static final String PREF_ZOOM_WHEN_ITEM_CLICKED = "PREF_ZOOM_WHEN_ITEM_CLICKED";
   public static final String PREF_ACTION_BAR_INDEX = "PREF_ACTION_BAR_INDEX";
   public static final String PREF_NOTIFICATION = "PREF_NOTIFICATION";
 

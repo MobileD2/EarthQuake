@@ -11,6 +11,7 @@ import android.graphics.Typeface;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.ColorUtils;
 import android.support.v4.util.LruCache;
+import android.support.v4.util.Pair;
 import android.util.Log;
 
 import com.androidmapsextensions.ClusterOptions;
@@ -23,7 +24,7 @@ import java.util.List;
 
 class MapClusterOptionsProvider implements ClusterOptionsProvider {
   private final static String TAG = "MAP_CLUSTER_PROVIDER";
-  private final LruCache<Integer, BitmapDescriptor> cache = new LruCache<>(128);
+  private final LruCache<Pair<Integer, Integer>, BitmapDescriptor> cache = new LruCache<>(128);
   private final ClusterOptions clusterOptions = new ClusterOptions().anchor(0.5f, 0.5f);
   private float startValue;
   private float endValue;
@@ -148,17 +149,15 @@ class MapClusterOptionsProvider implements ClusterOptionsProvider {
     float maxValue = calculateMaxValue(markers);
     int count = markers.size();
 
-//    Todo: Cached version. Cache key should use value and count.
+    Pair<Integer, Integer> cacheKey = Pair.create((int)(detectClusteringColor(minValue, meanValue, maxValue) * 1E2), count);
+    BitmapDescriptor icon = cache.get(cacheKey);
 
-//    int cacheKey = (int)(detectClusteringColor(minValue, meanValue, maxValue) * 1E2);
-//    BitmapDescriptor icon = cache.get(cacheKey);
-//
-//    if (icon == null) {
-//      icon = createIcon(minValue, meanValue, maxValue, count);
-//      cache.put(cacheKey, icon);
-//    }
+    if (icon == null) {
+      icon = createIcon(minValue, meanValue, maxValue, count);
+      cache.put(cacheKey, icon);
+    }
 
-    clusterOptions.icon(createIcon(minValue, meanValue, maxValue, count));
+    clusterOptions.icon(icon);
     return clusterOptions;
   }
 

@@ -87,37 +87,38 @@ public class UpdateService extends IntentService {
       HttpURLConnection httpConnection = (HttpURLConnection)connection;
       int responseCode = httpConnection.getResponseCode();
 
-      if (responseCode == HttpURLConnection.HTTP_OK) {
-        InputStream in = httpConnection.getInputStream();
+      switch(responseCode) {
+        case HttpURLConnection.HTTP_OK:
+          InputStream in = httpConnection.getInputStream();
 
-        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-        DocumentBuilder db = dbf.newDocumentBuilder();
+          DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+          DocumentBuilder db = dbf.newDocumentBuilder();
 
-        Document dom = db.parse(in);
-        Element docEle = dom.getDocumentElement();
+          Document dom = db.parse(in);
+          Element docEle = dom.getDocumentElement();
 
-        NodeList nl = docEle.getElementsByTagName("event");
-        int listLength = nl.getLength();
+          NodeList nl = docEle.getElementsByTagName("event");
+          int listLength = nl.getLength();
 
-        if (listLength > 0) {
-          for (int i = listLength - 1; i >= 0; --i) {
-            final QuakeData quake = new QuakeML().parse((Element)nl.item(i));
+          if (listLength > 0) {
+            for (int i = listLength - 1; i >= 0; --i) {
+              final QuakeData quake = new QuakeML().parse((Element)nl.item(i));
 
-            if (quake != null) {
-              addNewQuake(quake);
+              if (quake != null) {
+                addNewQuake(quake);
+              }
             }
           }
-        }
+        break;
       }
-
     } catch (MalformedURLException e) {
-      Log.d(TAG, "MalformedURLException");
+      Log.e(TAG, "MalformedURLException: " + e.toString());
     } catch (IOException e) {
-      Log.d(TAG, "IOException");
+      Log.e(TAG, "IOException: " + e.toString());
     } catch (ParserConfigurationException e) {
-      Log.d(TAG, "ParserConfigurationException");
+      Log.e(TAG, "ParserConfigurationException: " + e.toString());
     } catch (SAXException e) {
-      Log.d(TAG, "SAXException");
+      Log.e(TAG, "SAXException: " + e.toString());
     }
   }
 

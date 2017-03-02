@@ -11,6 +11,7 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.support.v4.util.Pair;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
@@ -22,6 +23,7 @@ import com.androidmapsextensions.Marker;
 import com.androidmapsextensions.MarkerOptions;
 import com.androidmapsextensions.OnMapReadyCallback;
 import com.androidmapsextensions.SupportMapFragment;
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
@@ -112,7 +114,7 @@ public class MapFragment extends SupportMapFragment implements IFragmentCallback
     googleMap.setClustering(new ClusteringSettings().enabled(true).addMarkersDynamically(true).clusterOptionsProvider(mapClusterOptionsProvider));
   }
 
-  private Marker addMarker(GoogleMap googleMap, LatLngBounds.Builder builder, float magnitude, LatLng position, String title, String snippet, boolean flat, float rotation, String image, float hue) {
+  private Marker addMarker(GoogleMap googleMap, float magnitude, LatLng position, String title, String snippet, boolean flat, float rotation, String image, float hue) {
     MarkerOptions markerOptions = new MarkerOptions()
       .position(position)
       .title(title)
@@ -128,8 +130,6 @@ public class MapFragment extends SupportMapFragment implements IFragmentCallback
     if (image != null) {
       images.put(marker, Uri.parse(resources.getString(R.string.map_marker_image_url) + '/' + image));
     }
-
-    builder.include(marker.getPosition());
 
     return marker;
   }
@@ -247,50 +247,146 @@ public class MapFragment extends SupportMapFragment implements IFragmentCallback
       googleMap.clear();
 
       if (cursor != null && cursor.moveToFirst()) {
-        LatLngBounds.Builder builder = new LatLngBounds.Builder();
-
         do {
-          LatLng location = new LatLng(cursor.getFloat(cursor.getColumnIndexOrThrow(ContentProvider.KEY_LATITUDE)), cursor.getFloat(cursor.getColumnIndexOrThrow(ContentProvider.KEY_LONGITUDE)));
+          double latitude = cursor.getDouble(cursor.getColumnIndexOrThrow(ContentProvider.KEY_LATITUDE));
+          double longitude = cursor.getDouble(cursor.getColumnIndexOrThrow(ContentProvider.KEY_LONGITUDE));
+          LatLng position = new LatLng(latitude, longitude);
           String date = new SimpleDateFormat("dd-MM-yyyy HH:mm", Locale.getDefault()).format(Long.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(ContentProvider.KEY_DATE))));
           String details = cursor.getString(cursor.getColumnIndexOrThrow(ContentProvider.KEY_DETAILS));
           float magnitude = cursor.getFloat(cursor.getColumnIndexOrThrow(ContentProvider.KEY_MAGNITUDE));
           float depth = cursor.getFloat(cursor.getColumnIndexOrThrow(ContentProvider.KEY_DEPTH));
           float hue = (((magnitude - maxPrefMagnitude) * BitmapDescriptorFactory.HUE_AZURE - (magnitude - minPrefMagnitude) * BitmapDescriptorFactory.HUE_RED) / (minPrefMagnitude - maxPrefMagnitude));
 
-          addMarker(googleMap, builder, magnitude, location, "Magnitude: " + magnitude, "Depth:\t\t" + depth + " m\nPlace:\t\t" + details + "\nDate:\t\t\t" + date, false, 0, null, hue);
+          addMarker(googleMap, magnitude, position, "Magnitude: " + magnitude, "Depth:\t\t" + depth + " m\nPlace:\t\t" + details + "\nDate:\t\t\t" + date, false, 0, null, hue);
         } while (cursor.moveToNext());
 
         if (needsInit) {
-          context.findViewById(android.R.id.content).post(() -> showInitialMap(builder));
+          context.findViewById(android.R.id.content).post(() -> zoomToArea(googleMap.getDisplayedMarkers(), false));
         }
       }
-    }
-  }
-
-  private void showInitialMap(LatLngBounds.Builder builder) {
-    try {
-      googleMap.moveCamera(CameraUpdateFactory.newLatLngBounds(builder.build(), 100));
-    } catch (IllegalStateException exception) {
-      Log.e(TAG, "Not enough space for map drawing");
     }
   }
 
   @Override
   public void onFragmentClick(Intent intent) {
     if (googleMap != null) {
-      int zoom = Integer.parseInt(prefs.getString(PreferencesActivity.PREF_ZOOM_WHEN_ITEM_CLICKED, "7"));
+      int zoom = Integer.parseInt(prefs.getString(PreferencesActivity.PREF_ZOOM_WHEN_ITEM_CLICKED, "-2"));
+      LatLng position = new LatLng(intent.getDoubleExtra(ContentProvider.KEY_LATITUDE, 0), intent.getDoubleExtra(ContentProvider.KEY_LONGITUDE, 0));
 
-      if (zoom < 0) {
-        googleMap.animateCamera((CameraUpdateFactory.newLatLngBounds(new LatLngBounds.Builder()
-          .include(new LatLng(Double.parseDouble(intent.getStringExtra(ContentProvider.KEY_LATITUDE)), Double.parseDouble(intent.getStringExtra(ContentProvider.KEY_LONGITUDE))))
-          .build()
-        , 100)), 1000, null);
+      switch(zoom) {
+        case -1:
+          zoomToMaxValue(position, true);
+        break;
+        case -2:
+          zoomToAutoValue(position, true);
+        break;
+        default:
+          zoomToDefinedValue(position, zoom, true);
+        break;
+      }
+    }
+  }
+
+  private void zoomToDefinedValue(LatLng position, int zoom, boolean animate) {
+    CameraUpdate cameraUpdate = CameraUpdateFactory.newCameraPosition(new CameraPosition.Builder()
+      .target(position)
+      .zoom(zoom)
+      .build());
+
+    try {
+      if (animate) {
+        googleMap.animateCamera(cameraUpdate, 1000, null);
       } else {
-        googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(new CameraPosition.Builder()
-          .target(new LatLng(Double.parseDouble(intent.getStringExtra(ContentProvider.KEY_LATITUDE)), Double.parseDouble(intent.getStringExtra(ContentProvider.KEY_LONGITUDE))))
-          .zoom(zoom)
-          .build()
-        ), 1000, null);
+        googleMap.moveCamera(cameraUpdate);
+      }
+    } catch (IllegalStateException exception) {
+      Log.e(TAG, "Not enough space for map drawing");
+    }
+  }
+
+  private void zoomToMaxValue(LatLng position, boolean animate) {
+    CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngBounds(new LatLngBounds.Builder()
+      .include(position)
+      .build()
+    , 100);
+
+    try {
+      if (animate) {
+        googleMap.animateCamera(cameraUpdate, 1000, null);
+      } else {
+        googleMap.moveCamera(cameraUpdate);
+      }
+    } catch (IllegalStateException exception) {
+      Log.e(TAG, "Not enough space for map drawing");
+    }
+  }
+
+  private void zoomToArea(List<Marker> markers, boolean animate) {
+    LatLngBounds.Builder builder = new LatLngBounds.Builder();
+
+    for (Marker marker : markers) {
+      builder.include(marker.getPosition());
+    }
+
+    try {
+      if (animate) {
+        googleMap.animateCamera(CameraUpdateFactory.newLatLngBounds(builder.build(), 100), 1000, null);
+      } else {
+        googleMap.moveCamera(CameraUpdateFactory.newLatLngBounds(builder.build(), 100));
+      }
+    } catch (IllegalStateException exception) {
+      Log.e(TAG, "Not enough space for map drawing");
+    }
+  }
+
+  private void zoomToAutoValue(LatLng position, boolean animate) {
+    Marker currentMarker = null;
+    CameraUpdate cameraUpdate = null;
+
+    for (Marker marker : googleMap.getDisplayedMarkers()) {
+      if (marker.isCluster()) {
+        for (Marker subMarker : marker.getMarkers()) {
+          if (subMarker.getPosition().equals(position)) {
+            currentMarker = marker;
+            break;
+          }
+        }
+        if (currentMarker != null) {
+          break;
+        }
+      } else {
+        if (marker.getPosition().equals(position)) {
+          currentMarker = marker;
+          break;
+        }
+      }
+    }
+
+    if (currentMarker != null) {
+      if (currentMarker.isCluster()) {
+        LatLngBounds.Builder builder = new LatLngBounds.Builder();
+
+        for (Marker marker : currentMarker.getMarkers()) {
+          builder.include(marker.getPosition());
+        }
+
+        cameraUpdate = CameraUpdateFactory.newLatLngBounds(builder.build(), 100);
+      } else {
+        cameraUpdate = CameraUpdateFactory.newCameraPosition(new CameraPosition.Builder()
+          .target(position)
+          .build());
+      }
+    }
+
+    if (cameraUpdate != null) {
+      try {
+        if (animate) {
+          googleMap.animateCamera(cameraUpdate, 1000, null);
+        } else {
+          googleMap.moveCamera(cameraUpdate);
+        }
+      } catch (IllegalStateException exception) {
+        Log.e(TAG, "Not enough space for map drawing");
       }
     }
   }

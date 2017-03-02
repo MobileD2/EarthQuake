@@ -61,10 +61,10 @@ public class ListFragment extends android.support.v4.app.ListFragment implements
 
     intent.putExtra(ContentProvider.KEY_DATE, new SimpleDateFormat("dd-MM-yyyy HH:mm", Locale.getDefault()).format(cursor.getLong(cursor.getColumnIndex(ContentProvider.KEY_DATE))));
     intent.putExtra(ContentProvider.KEY_DETAILS, cursor.getString(cursor.getColumnIndex(ContentProvider.KEY_DETAILS)));
-    intent.putExtra(ContentProvider.KEY_MAGNITUDE, String.valueOf(cursor.getDouble(cursor.getColumnIndex(ContentProvider.KEY_MAGNITUDE))));
-    intent.putExtra(ContentProvider.KEY_LATITUDE, String.valueOf(cursor.getDouble(cursor.getColumnIndex(ContentProvider.KEY_LATITUDE))));
-    intent.putExtra(ContentProvider.KEY_LONGITUDE, String.valueOf(cursor.getDouble(cursor.getColumnIndex(ContentProvider.KEY_LONGITUDE))));
-    intent.putExtra(ContentProvider.KEY_DEPTH, String.valueOf(cursor.getDouble(cursor.getColumnIndex(ContentProvider.KEY_DEPTH))));
+    intent.putExtra(ContentProvider.KEY_MAGNITUDE, cursor.getDouble(cursor.getColumnIndex(ContentProvider.KEY_MAGNITUDE)));
+    intent.putExtra(ContentProvider.KEY_LATITUDE, cursor.getDouble(cursor.getColumnIndex(ContentProvider.KEY_LATITUDE)));
+    intent.putExtra(ContentProvider.KEY_LONGITUDE, cursor.getDouble(cursor.getColumnIndex(ContentProvider.KEY_LONGITUDE)));
+    intent.putExtra(ContentProvider.KEY_DEPTH, cursor.getDouble(cursor.getColumnIndex(ContentProvider.KEY_DEPTH)));
 
     ((IFragmentCallback)context).onFragmentClick(intent);
   }

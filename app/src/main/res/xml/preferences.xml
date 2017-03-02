@@ -44,7 +44,7 @@
                   android:entries="@array/zoom_when_list_item_clicked_options"
                   android:entryValues="@array/zoom_when_list_item_clicked_values"
                   android:dialogTitle="Zoom when item clicked"
-                  android:defaultValue="7"/>
+                  android:defaultValue="-2"/>
 
   <CheckBoxPreference android:key="PREF_NOTIFICATION"
                       android:title="Notification"

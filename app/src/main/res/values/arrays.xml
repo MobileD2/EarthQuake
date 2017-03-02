@@ -88,6 +88,7 @@
   </string-array>
 
   <string-array name="zoom_when_list_item_clicked_options">
+    <item>Auto</item>
     <item>2</item>
     <item>3</item>
     <item>4</item>
@@ -112,6 +113,7 @@
   </string-array>
 
   <string-array name="zoom_when_list_item_clicked_values">
+    <item>-2</item>
     <item>2</item>
     <item>3</item>
     <item>4</item>

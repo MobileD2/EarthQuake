@@ -308,7 +308,7 @@ public class MapFragment extends SupportMapFragment implements IFragmentCallback
     CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngBounds(new LatLngBounds.Builder()
       .include(position)
       .build()
-    , 100);
+    , 0);
 
     try {
       if (animate) {
@@ -330,9 +330,9 @@ public class MapFragment extends SupportMapFragment implements IFragmentCallback
 
     try {
       if (animate) {
-        googleMap.animateCamera(CameraUpdateFactory.newLatLngBounds(builder.build(), 100), 1000, null);
+        googleMap.animateCamera(CameraUpdateFactory.newLatLngBounds(builder.build(), 0), 1000, null);
       } else {
-        googleMap.moveCamera(CameraUpdateFactory.newLatLngBounds(builder.build(), 100));
+        googleMap.moveCamera(CameraUpdateFactory.newLatLngBounds(builder.build(), 0));
       }
     } catch (IllegalStateException exception) {
       Log.e(TAG, "Not enough space for map drawing");
@@ -340,54 +340,131 @@ public class MapFragment extends SupportMapFragment implements IFragmentCallback
   }
 
   private void zoomToAutoValue(LatLng position, boolean animate) {
-    Marker currentMarker = null;
-    CameraUpdate cameraUpdate = null;
+    List<LatLng> closestMarkerPositions = new ArrayList<>();
 
-    for (Marker marker : googleMap.getDisplayedMarkers()) {
-      if (marker.isCluster()) {
-        for (Marker subMarker : marker.getMarkers()) {
-          if (subMarker.getPosition().equals(position)) {
-            currentMarker = marker;
-            break;
+    closestMarkerPositions.add(position);
+
+    LatLng closestMarker = findClosestMarkerPosition(position, googleMap.getMarkers(), closestMarkerPositions);
+    CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngBounds(createBoundsArea(position, getPositionsDistance(position, closestMarker)), 0);
+    List<MapCameraUpdate> cameraUpdates = new ArrayList<>();
+
+    if (animate) {
+      cameraUpdates.add(new MapCameraUpdate(cameraUpdate, true, 1000));
+    } else {
+      cameraUpdates.add(new MapCameraUpdate(cameraUpdate, false, 0));
+    }
+
+    cameraUpdates.add(new MapCameraUpdate(CameraUpdateFactory.newLatLng(position), true, 100));
+
+    MapCameraUpdates mapCameraUpdates = new MapCameraUpdates(googleMap, cameraUpdates);
+
+    Property<MapCameraUpdates, Integer> property = Property.of(MapCameraUpdates.class, Integer.class, "index");
+    ObjectAnimator animator = ObjectAnimator.ofInt(mapCameraUpdates, property, 0, cameraUpdates.size() - 1);
+
+    animator.setDuration(mapCameraUpdates.getTotalDuration());
+    animator.start();
+  }
+
+  private double getPositionsDistance(LatLng from, LatLng to) {
+    return SphericalUtil.computeDistanceBetween(from, to);
+
+//    double chLatitude = to.latitude - from.latitude;
+//    double chLongitude = to.longitude - from.longitude;
+//    double dLatitude = chLatitude * (Math.PI / 180);
+//    double dLongitude = chLongitude * (Math.PI / 180);
+//    double rLatitude1 = to.latitude * (Math.PI / 180);
+//    double rLatitude2 = to.latitude * (Math.PI / 180);
+//    double a = Math.sin(dLatitude / 2) * Math.sin(dLatitude / 2) + Math.sin(dLongitude / 2) * Math.sin(dLongitude / 2) * Math.cos(rLatitude1) * Math.cos(rLatitude2);
+//
+//    return 12742000 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  }
+
+  private LatLng findClosestMarkerPosition(LatLng currentPosition, List<Marker> markers, List<LatLng> omitPositions) {
+    LatLng closestMarker = null;
+    List<LatLng> operatingMarkers = new ArrayList<>();
+    List<Double> distances = new ArrayList<>();
+    int closest = -1;
+
+    for (Marker marker : markers) {
+      if (omitPositions.indexOf(marker.getPosition()) < 0) {
+        operatingMarkers.add(marker.getPosition());
+      }
+    }
+
+    for (LatLng position : operatingMarkers) {
+      double distance = getPositionsDistance(currentPosition, position);
+
+      distances.add(distance);
+
+      if (closest < 0 || distance < distances.get(closest)) {
+        closest = operatingMarkers.indexOf(position);
+        closestMarker = position;
+      }
+    }
+
+    return closestMarker;
+  }
+
+  private static class MapCameraUpdate {
+    private CameraUpdate update;
+    private boolean animate = false;
+    private boolean done = false;
+    private int duration = 0;
+
+    MapCameraUpdate (CameraUpdate update, boolean animate, int duration) {
+      this.update = update;
+      this.animate = animate;
+      this.duration = duration;
+    }
+
+    public int getDuration() {
+      return duration;
+    }
+
+    void run(GoogleMap googleMap) {
+      if (!done) {
+        done = true;
+
+        try {
+          if (animate) {
+            googleMap.animateCamera(update, duration, null);
+          } else {
+            googleMap.moveCamera(update);
           }
-        }
-        if (currentMarker != null) {
-          break;
-        }
-      } else {
-        if (marker.getPosition().equals(position)) {
-          currentMarker = marker;
-          break;
+        } catch (IllegalStateException exception) {
+          Log.e(TAG, exception.toString());
         }
       }
     }
+  }
 
-    if (currentMarker != null) {
-      if (currentMarker.isCluster()) {
-        LatLngBounds.Builder builder = new LatLngBounds.Builder();
+  private static class MapCameraUpdates {
+    private GoogleMap googleMap;
+    private List<MapCameraUpdate> updates;
+    private int index = 0;
 
-        for (Marker marker : currentMarker.getMarkers()) {
-          builder.include(marker.getPosition());
-        }
-
-        cameraUpdate = CameraUpdateFactory.newLatLngBounds(builder.build(), 100);
-      } else {
-        cameraUpdate = CameraUpdateFactory.newCameraPosition(new CameraPosition.Builder()
-          .target(position)
-          .build());
-      }
+    MapCameraUpdates (GoogleMap googleMap, List<MapCameraUpdate> updates) {
+      this.googleMap = googleMap;
+      this.updates = updates;
     }
 
-    if (cameraUpdate != null) {
-      try {
-        if (animate) {
-          googleMap.animateCamera(cameraUpdate, 1000, null);
-        } else {
-          googleMap.moveCamera(cameraUpdate);
-        }
-      } catch (IllegalStateException exception) {
-        Log.e(TAG, "Not enough space for map drawing");
+    void setIndex(int index) {
+      this.index = index;
+      updates.get(index).run(googleMap);
+    }
+
+    int getIndex() {
+      return index;
+    }
+
+    int getTotalDuration() {
+      int duration = 0;
+
+      for (MapCameraUpdate update : updates) {
+        duration += update.getDuration();
       }
+
+      return duration;
     }
   }
 
@@ -396,5 +473,17 @@ public class MapFragment extends SupportMapFragment implements IFragmentCallback
     public LatLng evaluate(float fraction, LatLng startValue, LatLng endValue) {
       return SphericalUtil.interpolate(startValue, endValue, fraction);
     }
+  }
+
+  private LatLngBounds createBoundsArea(LatLng center, double radius) {
+    LatLng southWest = SphericalUtil.computeOffset(center, radius * Math.sqrt(2.0), 225);
+    LatLng northEast = SphericalUtil.computeOffset(center, radius * Math.sqrt(2.0), 45);
+
+    LatLngBounds squareBounds = new LatLngBounds(southWest, northEast);
+
+    southWest = SphericalUtil.computeOffset(center, radius * Math.sqrt(2.0), SphericalUtil.computeHeading(center, squareBounds.southwest));
+    northEast = SphericalUtil.computeOffset(center, radius * Math.sqrt(2.0), 360 + SphericalUtil.computeHeading(center, squareBounds.northeast));
+
+    return new LatLngBounds(southWest, northEast);
   }
 }

@@ -300,7 +300,7 @@ public class MapFragment extends SupportMapFragment implements IFragmentCallback
         googleMap.moveCamera(cameraUpdate);
       }
     } catch (IllegalStateException exception) {
-      Log.e(TAG, "Not enough space for map drawing");
+      Log.e(TAG, exception.toString());
     }
   }
 
@@ -317,7 +317,7 @@ public class MapFragment extends SupportMapFragment implements IFragmentCallback
         googleMap.moveCamera(cameraUpdate);
       }
     } catch (IllegalStateException exception) {
-      Log.e(TAG, "Not enough space for map drawing");
+      Log.e(TAG, exception.toString());
     }
   }
 
@@ -335,7 +335,7 @@ public class MapFragment extends SupportMapFragment implements IFragmentCallback
         googleMap.moveCamera(CameraUpdateFactory.newLatLngBounds(builder.build(), 0));
       }
     } catch (IllegalStateException exception) {
-      Log.e(TAG, "Not enough space for map drawing");
+      Log.e(TAG, exception.toString());
     }
   }
 

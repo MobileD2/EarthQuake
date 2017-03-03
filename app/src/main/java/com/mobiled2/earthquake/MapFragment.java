@@ -11,7 +11,6 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
-import android.support.v4.util.Pair;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
@@ -344,8 +343,9 @@ public class MapFragment extends SupportMapFragment implements IFragmentCallback
 
     closestMarkerPositions.add(position);
 
-    LatLng closestMarker = findClosestMarkerPosition(position, googleMap.getMarkers(), closestMarkerPositions);
-    CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngBounds(createBoundsArea(position, getPositionsDistance(position, closestMarker)), 0);
+    LatLng closestMarkerPosition = findClosestMarkerPosition(position, googleMap.getMarkers(), closestMarkerPositions);
+
+    CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngBounds(createBoundsArea(position, getPositionsDistance(position, closestMarkerPosition)), 0);
     List<MapCameraUpdate> cameraUpdates = new ArrayList<>();
 
     if (animate) {
@@ -380,29 +380,29 @@ public class MapFragment extends SupportMapFragment implements IFragmentCallback
   }
 
   private LatLng findClosestMarkerPosition(LatLng currentPosition, List<Marker> markers, List<LatLng> omitPositions) {
-    LatLng closestMarker = null;
-    List<LatLng> operatingMarkers = new ArrayList<>();
-    List<Double> distances = new ArrayList<>();
-    int closest = -1;
+    List<PositionDistance> positionDistances = new ArrayList<>();
 
     for (Marker marker : markers) {
-      if (omitPositions.indexOf(marker.getPosition()) < 0) {
-        operatingMarkers.add(marker.getPosition());
+      LatLng position = marker.getPosition();
+
+      if (omitPositions.indexOf(position) < 0) {
+        positionDistances.add(new PositionDistance(currentPosition, marker));
       }
     }
 
-    for (LatLng position : operatingMarkers) {
-      double distance = getPositionsDistance(currentPosition, position);
+    PositionDistance result = null;
 
-      distances.add(distance);
-
-      if (closest < 0 || distance < distances.get(closest)) {
-        closest = operatingMarkers.indexOf(position);
-        closestMarker = position;
+    for (PositionDistance positionDistance : positionDistances) {
+      if (result == null || positionDistance.getDistance() < result.getDistance()) {
+        result = positionDistance;
       }
     }
 
-    return closestMarker;
+    if (result != null) {
+      return result.getPosition();
+    } else {
+      return currentPosition;
+    }
   }
 
   private static class MapCameraUpdate {
@@ -472,6 +472,26 @@ public class MapFragment extends SupportMapFragment implements IFragmentCallback
     @Override
     public LatLng evaluate(float fraction, LatLng startValue, LatLng endValue) {
       return SphericalUtil.interpolate(startValue, endValue, fraction);
+    }
+  }
+
+  private class PositionDistance {
+    private LatLng position;
+    private double distance;
+    private Marker marker;
+
+    PositionDistance (LatLng from, Marker to) {
+      this.distance = getPositionsDistance(from, to.getPosition());
+      this.position = to.getPosition();
+      this.marker = to;
+    }
+
+    LatLng getPosition() {
+      return position;
+    }
+
+    double getDistance() {
+      return distance;
     }
   }
 

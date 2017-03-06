@@ -339,13 +339,13 @@ public class MapFragment extends SupportMapFragment implements IFragmentCallback
   }
 
   private void zoomToAutoValue(LatLng position, boolean animate) {
-    List<LatLng> closestMarkerPositions = new ArrayList<>();
+    List<LatLng> nearestMarkerPositions = new ArrayList<>();
 
-    closestMarkerPositions.add(position);
+    nearestMarkerPositions.add(position);
 
-    LatLng closestMarkerPosition = findClosestMarkerPosition(position, googleMap.getMarkers(), closestMarkerPositions);
+    LatLng nearestMarkerPosition = findNearestMarkerPosition(position, googleMap.getMarkers(), nearestMarkerPositions);
 
-    CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngBounds(createBoundsArea(position, getPositionsDistance(position, closestMarkerPosition)), 0);
+    CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngBounds(createBoundsArea(position, getPositionsDistance(position, nearestMarkerPosition)), (int)(getResources().getDisplayMetrics().widthPixels * 0.1));
     List<MapCameraUpdate> cameraUpdates = new ArrayList<>();
 
     if (animate) {
@@ -379,7 +379,7 @@ public class MapFragment extends SupportMapFragment implements IFragmentCallback
 //    return 12742000 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
   }
 
-  private LatLng findClosestMarkerPosition(LatLng currentPosition, List<Marker> markers, List<LatLng> omitPositions) {
+  private LatLng findNearestMarkerPosition(LatLng currentPosition, List<Marker> markers, List<LatLng> omitPositions) {
     List<PositionDistance> positionDistances = new ArrayList<>();
 
     for (Marker marker : markers) {
@@ -417,7 +417,7 @@ public class MapFragment extends SupportMapFragment implements IFragmentCallback
       this.duration = duration;
     }
 
-    public int getDuration() {
+    int getDuration() {
       return duration;
     }
 
@@ -496,13 +496,13 @@ public class MapFragment extends SupportMapFragment implements IFragmentCallback
   }
 
   private LatLngBounds createBoundsArea(LatLng center, double radius) {
-    LatLng southWest = SphericalUtil.computeOffset(center, radius * Math.sqrt(2.0), 225);
-    LatLng northEast = SphericalUtil.computeOffset(center, radius * Math.sqrt(2.0), 45);
+    LatLng southWest = SphericalUtil.computeOffset(center, radius, 225);
+    LatLng northEast = SphericalUtil.computeOffset(center, radius, 45);
 
     LatLngBounds squareBounds = new LatLngBounds(southWest, northEast);
 
-    southWest = SphericalUtil.computeOffset(center, radius * Math.sqrt(2.0), SphericalUtil.computeHeading(center, squareBounds.southwest));
-    northEast = SphericalUtil.computeOffset(center, radius * Math.sqrt(2.0), 360 + SphericalUtil.computeHeading(center, squareBounds.northeast));
+    southWest = SphericalUtil.computeOffset(center, radius, SphericalUtil.computeHeading(center, squareBounds.southwest));
+    northEast = SphericalUtil.computeOffset(center, radius, SphericalUtil.computeHeading(center, squareBounds.northeast));
 
     return new LatLngBounds(southWest, northEast);
   }

@@ -1,6 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
+  <ListPreference android:key="PREF_DATA_SOURCE"
+                  android:title="Data Source"
+                  android:summary="Data source for earthquakes data"
+                  android:entries="@array/data_source_options"
+                  android:entryValues="@array/data_source_values"
+                  android:dialogTitle="Data Source"
+                  android:defaultValue="@string/quake_all_hour_feed"/>
+
   <CheckBoxPreference android:key="PREF_AUTO_UPDATE"
                       android:title="Auto Refresh"
                       android:summary="Select to turn on automatic updating"

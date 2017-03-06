@@ -78,7 +78,7 @@ public class UpdateService extends IntentService {
 
   public void refreshEarthquakes() {
     try {
-      String quakeFeed = getString(R.string.quake_all_day_feed);
+      String quakeFeed = prefs.getString(PreferencesActivity.PREF_DATA_SOURCE, getString(R.string.quake_all_day_feed));
       URL url = new URL(quakeFeed);
 
       URLConnection connection;

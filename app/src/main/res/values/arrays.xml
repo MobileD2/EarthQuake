@@ -1,6 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+  <string-array name="data_source_options">
+    <item>Hour</item>
+    <item>Day</item>
+    <item>Week</item>
+    <item>Month</item>
+  </string-array>
+
+  <string-array name="data_source_values">
+    <item>@string/quake_all_hour_feed</item>
+    <item>@string/quake_all_day_feed</item>
+    <item>@string/quake_all_week_feed</item>
+    <item>@string/quake_all_month_feed</item>
+  </string-array>
+
   <string-array name="update_freq_options">
     <item>Every Minute</item>
     <item>5 Minutes</item>

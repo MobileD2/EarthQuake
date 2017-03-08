@@ -305,10 +305,7 @@ public class MapFragment extends SupportMapFragment implements IFragmentCallback
   }
 
   private void zoomToMaxValue(LatLng position, boolean animate) {
-    CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngBounds(new LatLngBounds.Builder()
-      .include(position)
-      .build()
-    , 0);
+    CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngBounds(new LatLngBounds.Builder().include(position).build(), getLatLngBoundsPadding(0.1));
 
     try {
       if (animate) {
@@ -328,11 +325,13 @@ public class MapFragment extends SupportMapFragment implements IFragmentCallback
       builder.include(marker.getPosition());
     }
 
+    CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngBounds(builder.build(), getLatLngBoundsPadding(0.1));
+
     try {
       if (animate) {
-        googleMap.animateCamera(CameraUpdateFactory.newLatLngBounds(builder.build(), 0), 1000, null);
+        googleMap.animateCamera(cameraUpdate, 1000, null);
       } else {
-        googleMap.moveCamera(CameraUpdateFactory.newLatLngBounds(builder.build(), 0));
+        googleMap.moveCamera(cameraUpdate);
       }
     } catch (IllegalStateException exception) {
       Log.e(TAG, exception.toString());

@@ -13,6 +13,7 @@ import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -157,7 +158,7 @@ public class MapFragment extends SupportMapFragment implements IFragmentCallback
         builder.include(item.getPosition());
       }
 
-      googleMap.animateCamera(CameraUpdateFactory.newLatLngBounds(builder.build(), 100), 1000, null);
+      googleMap.animateCamera(CameraUpdateFactory.newLatLngBounds(builder.build(), getLatLngBoundsPadding(0.1)), 1000, null);
     }
 
     return isCluster;
@@ -344,8 +345,9 @@ public class MapFragment extends SupportMapFragment implements IFragmentCallback
     nearestMarkerPositions.add(position);
 
     LatLng nearestMarkerPosition = findNearestMarkerPosition(position, googleMap.getMarkers(), nearestMarkerPositions);
+    LatLngBounds boundsArea = createBoundsArea(position, nearestMarkerPosition);
 
-    CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngBounds(createBoundsArea(position, getPositionsDistance(position, nearestMarkerPosition)), (int)(getResources().getDisplayMetrics().widthPixels * 0.1));
+    CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngBounds(boundsArea, getLatLngBoundsPadding(0.1));
     List<MapCameraUpdate> cameraUpdates = new ArrayList<>();
 
     if (animate) {
@@ -354,7 +356,7 @@ public class MapFragment extends SupportMapFragment implements IFragmentCallback
       cameraUpdates.add(new MapCameraUpdate(cameraUpdate, false, 0));
     }
 
-    cameraUpdates.add(new MapCameraUpdate(CameraUpdateFactory.newLatLng(position), true, 100));
+    cameraUpdates.add(new MapCameraUpdate(CameraUpdateFactory.newLatLng(position), true, 10));
 
     MapCameraUpdates mapCameraUpdates = new MapCameraUpdates(googleMap, cameraUpdates);
 
@@ -363,6 +365,12 @@ public class MapFragment extends SupportMapFragment implements IFragmentCallback
 
     animator.setDuration(mapCameraUpdates.getTotalDuration());
     animator.start();
+  }
+
+  private int getLatLngBoundsPadding(double scale) {
+    DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
+
+    return (int)Math.max(displayMetrics.widthPixels * scale, displayMetrics.heightPixels * scale);
   }
 
   private double getPositionsDistance(LatLng from, LatLng to) {
@@ -495,15 +503,9 @@ public class MapFragment extends SupportMapFragment implements IFragmentCallback
     }
   }
 
-  private LatLngBounds createBoundsArea(LatLng center, double radius) {
-    LatLng southWest = SphericalUtil.computeOffset(center, radius, 225);
-    LatLng northEast = SphericalUtil.computeOffset(center, radius, 45);
+  private LatLngBounds createBoundsArea(LatLng position, LatLng nearestPosition) {
+    double distance = getPositionsDistance(position, nearestPosition);
 
-    LatLngBounds squareBounds = new LatLngBounds(southWest, northEast);
-
-    southWest = SphericalUtil.computeOffset(center, radius, SphericalUtil.computeHeading(center, squareBounds.southwest));
-    northEast = SphericalUtil.computeOffset(center, radius, SphericalUtil.computeHeading(center, squareBounds.northeast));
-
-    return new LatLngBounds(southWest, northEast);
+    return new LatLngBounds(SphericalUtil.computeOffset(position, distance, 180), SphericalUtil.computeOffset(position, distance, 0));
   }
 }

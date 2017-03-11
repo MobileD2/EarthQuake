@@ -8,10 +8,9 @@ import android.graphics.Color;
 import android.media.RingtoneManager;
 import android.support.v7.app.NotificationCompat;
 
-import java.text.SimpleDateFormat;
-import java.util.Locale;
+import org.joda.time.LocalDateTime;
 
-public class Notification {
+class Notification {
   private static final int NOTIFICATION_ID = 1;
 
   private static final double LIGHT_MAGNITUDE = 3;
@@ -25,7 +24,7 @@ public class Notification {
   private NotificationCompat.Builder notificationBuilder;
   private Context context;
 
-  public Notification(Context context) {
+  Notification(Context context) {
     notificationBuilder = new NotificationCompat.Builder(context);
 
     notificationBuilder
@@ -40,7 +39,7 @@ public class Notification {
   void send(QuakeData quakeData) {
     Intent intent = new Intent(context, MainActivity.class);
     long time = quakeData.getDate().getTime();
-    String date = new SimpleDateFormat("dd-MM-yyyy HH:mm", Locale.getDefault()).format(time);
+    String date = new LocalDateTime(time).toString("dd-MM-yyyy HH:mm");
     String details = quakeData.getDetails();
     double magnitude = quakeData.getMagnitude();
 

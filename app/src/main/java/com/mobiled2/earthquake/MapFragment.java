@@ -34,11 +34,12 @@ import com.nineoldandroids.animation.ObjectAnimator;
 import com.nineoldandroids.animation.TypeEvaluator;
 import com.nineoldandroids.util.Property;
 
-import java.text.SimpleDateFormat;
+import org.joda.time.LocalDateTime;
+import org.joda.time.LocalTime;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 
 public class MapFragment extends SupportMapFragment implements IFragmentCallback, OnMapReadyCallback, GoogleMap.OnInfoWindowClickListener, GoogleMap.OnMarkerClickListener, GoogleMap.OnMarkerDragListener, LoaderManager.LoaderCallbacks<Cursor> {
   private static final String TAG = "MAP_FRAGMENT";
@@ -203,22 +204,22 @@ public class MapFragment extends SupportMapFragment implements IFragmentCallback
     if (recordsCount < 0) {
       switch (recordsCount) {
         case -1:
-          selection.add("(" + ContentProvider.KEY_DATE + " >= STRFTIME('%s000', DATE('NOW'), 'UTC'))");
+          selection.add("(" + ContentProvider.KEY_DATE + " >= " + LocalDateTime.now().toLocalDate().toDateTime(LocalTime.MIDNIGHT).getMillis() +  ")");
         break;
         case -2:
-          selection.add("(" + ContentProvider.KEY_DATE + " >= STRFTIME('%s000', DATE('NOW', '-7 DAYS'), 'UTC'))");
+          selection.add("(" + ContentProvider.KEY_DATE + " >= " + LocalDateTime.now().toLocalDate().minusDays(7).toDateTime(LocalTime.MIDNIGHT).getMillis() +  ")");
         break;
         case -3:
-          selection.add("(" + ContentProvider.KEY_DATE + " >= STRFTIME('%s000', DATE('NOW', '-1 MONTH'), 'UTC'))");
+          selection.add("(" + ContentProvider.KEY_DATE + " >= " + LocalDateTime.now().toLocalDate().minusMonths(1).toDateTime(LocalTime.MIDNIGHT).getMillis() +  ")");
         break;
         case -4:
-          selection.add("(" + ContentProvider.KEY_DATE + " >= STRFTIME('%s000', DATE('NOW', '-3 MONTHS'), 'UTC'))");
+          selection.add("(" + ContentProvider.KEY_DATE + " >= " + LocalDateTime.now().toLocalDate().minusMonths(3).toDateTime(LocalTime.MIDNIGHT).getMillis() +  ")");
         break;
         case -5:
-          selection.add("(" + ContentProvider.KEY_DATE + " >= STRFTIME('%s000', DATE('NOW', '-6 MONTHS'), 'UTC'))");
+          selection.add("(" + ContentProvider.KEY_DATE + " >= " + LocalDateTime.now().toLocalDate().minusMonths(6).toDateTime(LocalTime.MIDNIGHT).getMillis() +  ")");
         break;
         case -6:
-          selection.add("(" + ContentProvider.KEY_DATE + " >= STRFTIME('%s000', DATE('NOW', '-1 YEAR'), 'UTC'))");
+          selection.add("(" + ContentProvider.KEY_DATE + " >= " + LocalDateTime.now().toLocalDate().minusYears(1).toDateTime(LocalTime.MIDNIGHT).getMillis() +  ")");
         break;
       }
     }
@@ -251,7 +252,7 @@ public class MapFragment extends SupportMapFragment implements IFragmentCallback
           double latitude = cursor.getDouble(cursor.getColumnIndexOrThrow(ContentProvider.KEY_LATITUDE));
           double longitude = cursor.getDouble(cursor.getColumnIndexOrThrow(ContentProvider.KEY_LONGITUDE));
           LatLng position = new LatLng(latitude, longitude);
-          String date = new SimpleDateFormat("dd-MM-yyyy HH:mm", Locale.getDefault()).format(Long.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(ContentProvider.KEY_DATE))));
+          String date = new LocalDateTime(cursor.getLong(cursor.getColumnIndexOrThrow(ContentProvider.KEY_DATE))).toString("dd-MM-yyyy HH:mm");
           String details = cursor.getString(cursor.getColumnIndexOrThrow(ContentProvider.KEY_DETAILS));
           float magnitude = cursor.getFloat(cursor.getColumnIndexOrThrow(ContentProvider.KEY_MAGNITUDE));
           float depth = cursor.getFloat(cursor.getColumnIndexOrThrow(ContentProvider.KEY_DEPTH));
@@ -485,12 +486,10 @@ public class MapFragment extends SupportMapFragment implements IFragmentCallback
   private class PositionDistance {
     private LatLng position;
     private double distance;
-    private Marker marker;
 
     PositionDistance (LatLng from, Marker to) {
       this.distance = getPositionsDistance(from, to.getPosition());
       this.position = to.getPosition();
-      this.marker = to;
     }
 
     LatLng getPosition() {

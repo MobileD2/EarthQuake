@@ -2,6 +2,8 @@ package com.mobiled2.earthquake;
 
 import android.util.Log;
 
+import org.joda.time.LocalDateTime;
+import org.joda.time.format.ISODateTimeFormat;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -11,6 +13,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Locale;
+import java.util.TimeZone;
 
 class QuakeML {
   private static final String TAG = "EARTHQUAKE_QUAKEML";
@@ -110,16 +113,9 @@ class QuakeML {
       return null;
     }
 
-    Date date = new GregorianCalendar(0, 0, 0).getTime();
-    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'hh:mm:ss.SSS'Z'", Locale.getDefault());
+    LocalDateTime dateTime = ISODateTimeFormat.dateTimeParser().parseDateTime(time).toLocalDateTime();
 
-    try {
-      date = sdf.parse(time);
-    } catch (ParseException e) {
-      Log.d(TAG, "Date parsing exception", e);
-    }
-
-    return new QuakeData(date, details, Double.parseDouble(latitude), Double.parseDouble(longitude), Double.parseDouble(depth), Double.parseDouble(magnitude));
+    return new QuakeData(dateTime.toDate(), details, Double.parseDouble(latitude), Double.parseDouble(longitude), Double.parseDouble(depth), Double.parseDouble(magnitude));
   }
 
   private String parseStringNodeList(NodeList entry) {

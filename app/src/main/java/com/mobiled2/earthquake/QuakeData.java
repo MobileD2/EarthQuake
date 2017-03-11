@@ -1,8 +1,8 @@
 package com.mobiled2.earthquake;
 
-import java.text.SimpleDateFormat;
+import org.joda.time.LocalDateTime;
+
 import java.util.Date;
-import java.util.Locale;
 
 class QuakeData {
   private Date date;
@@ -23,7 +23,7 @@ class QuakeData {
 
   @Override
   public String toString() {
-    return new SimpleDateFormat("HH:mm", Locale.getDefault()).format(date) + ", " + magnitude + ", " + details;
+    return new LocalDateTime(date.getTime()).toString("HH:mm") + ", " + magnitude + ", " + details;
   }
 
   Date getDate() {

@@ -5,8 +5,7 @@ import android.database.Cursor;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 
-import java.text.SimpleDateFormat;
-import java.util.Locale;
+import org.joda.time.LocalDateTime;
 
 class QuakeDataCursorAdapter extends SimpleCursorAdapter {
   QuakeDataCursorAdapter(Context context, int layout, Cursor c, String[] from, int[] to, int flags) {
@@ -17,7 +16,7 @@ class QuakeDataCursorAdapter extends SimpleCursorAdapter {
   public void setViewText(TextView view, String text) {
     switch(view.getId()) {
       case R.id.date:
-        text = new SimpleDateFormat("dd-MM-yyyy HH:mm", Locale.getDefault()).format(Long.valueOf(text));
+        text = new LocalDateTime(Long.valueOf(text)).toString("dd-MM-yyyy HH:mm");
       break;
     }
 

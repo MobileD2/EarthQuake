@@ -15,10 +15,11 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ListView;
 
-import java.text.SimpleDateFormat;
+import org.joda.time.LocalDateTime;
+import org.joda.time.LocalTime;
+
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 public class ListFragment extends android.support.v4.app.ListFragment implements IFragmentCallback, LoaderManager.LoaderCallbacks<Cursor> {
   private static final String TAG = "LIST_FRAGMENT";
@@ -59,7 +60,7 @@ public class ListFragment extends android.support.v4.app.ListFragment implements
     Cursor cursor = (Cursor)getListAdapter().getItem(position);
     Intent intent = new Intent();
 
-    intent.putExtra(ContentProvider.KEY_DATE, new SimpleDateFormat("dd-MM-yyyy HH:mm", Locale.getDefault()).format(cursor.getLong(cursor.getColumnIndex(ContentProvider.KEY_DATE))));
+    intent.putExtra(ContentProvider.KEY_DATE, new LocalDateTime(cursor.getLong(cursor.getColumnIndex(ContentProvider.KEY_DATE))).toString("dd-MM-yyyy HH:mm"));
     intent.putExtra(ContentProvider.KEY_DETAILS, cursor.getString(cursor.getColumnIndex(ContentProvider.KEY_DETAILS)));
     intent.putExtra(ContentProvider.KEY_MAGNITUDE, cursor.getDouble(cursor.getColumnIndex(ContentProvider.KEY_MAGNITUDE)));
     intent.putExtra(ContentProvider.KEY_LATITUDE, cursor.getDouble(cursor.getColumnIndex(ContentProvider.KEY_LATITUDE)));
@@ -93,22 +94,22 @@ public class ListFragment extends android.support.v4.app.ListFragment implements
     if (recordsCount < 0) {
       switch (recordsCount) {
         case -1:
-          selection.add("(" + ContentProvider.KEY_DATE + " >= STRFTIME('%s000', DATE('NOW'), 'UTC'))");
+          selection.add("(" + ContentProvider.KEY_DATE + " >= " + LocalDateTime.now().toLocalDate().toDateTime(LocalTime.MIDNIGHT).getMillis() +  ")");
         break;
         case -2:
-          selection.add("(" + ContentProvider.KEY_DATE + " >= STRFTIME('%s000', DATE('NOW', '-7 DAYS'), 'UTC'))");
+          selection.add("(" + ContentProvider.KEY_DATE + " >= " + LocalDateTime.now().toLocalDate().minusDays(7).toDateTime(LocalTime.MIDNIGHT).getMillis() +  ")");
         break;
         case -3:
-          selection.add("(" + ContentProvider.KEY_DATE + " >= STRFTIME('%s000', DATE('NOW', '-1 MONTH'), 'UTC'))");
+          selection.add("(" + ContentProvider.KEY_DATE + " >= " + LocalDateTime.now().toLocalDate().minusMonths(1).toDateTime(LocalTime.MIDNIGHT).getMillis() +  ")");
         break;
         case -4:
-          selection.add("(" + ContentProvider.KEY_DATE + " >= STRFTIME('%s000', DATE('NOW', '-3 MONTHS'), 'UTC'))");
+          selection.add("(" + ContentProvider.KEY_DATE + " >= " + LocalDateTime.now().toLocalDate().minusMonths(3).toDateTime(LocalTime.MIDNIGHT).getMillis() +  ")");
         break;
         case -5:
-          selection.add("(" + ContentProvider.KEY_DATE + " >= STRFTIME('%s000', DATE('NOW', '-6 MONTHS'), 'UTC'))");
+          selection.add("(" + ContentProvider.KEY_DATE + " >= " + LocalDateTime.now().toLocalDate().minusMonths(6).toDateTime(LocalTime.MIDNIGHT).getMillis() +  ")");
         break;
         case -6:
-          selection.add("(" + ContentProvider.KEY_DATE + " >= STRFTIME('%s000', DATE('NOW', '-1 YEAR'), 'UTC'))");
+          selection.add("(" + ContentProvider.KEY_DATE + " >= " + LocalDateTime.now().toLocalDate().minusYears(1).toDateTime(LocalTime.MIDNIGHT).getMillis() +  ")");
         break;
       }
     }

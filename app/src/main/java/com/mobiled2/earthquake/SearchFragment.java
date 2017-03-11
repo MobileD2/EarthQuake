@@ -11,8 +11,7 @@ import android.support.v4.content.Loader;
 import android.view.View;
 import android.widget.ListView;
 
-import java.text.SimpleDateFormat;
-import java.util.Locale;
+import org.joda.time.LocalDateTime;
 
 public class SearchFragment extends ListFragment implements LoaderManager.LoaderCallbacks<Cursor> {
   public static final String QUERY_EXTRA_KEY = "QUERY_EXTRA_KEY";
@@ -40,7 +39,7 @@ public class SearchFragment extends ListFragment implements LoaderManager.Loader
     Cursor cursor = (Cursor)getListAdapter().getItem(position);
     Intent intent = new Intent(getActivity(), QuakeDetailsActivity.class);
 
-    intent.putExtra(ContentProvider.KEY_DATE, new SimpleDateFormat("dd-MM-yyyy HH:mm", Locale.getDefault()).format(cursor.getLong(cursor.getColumnIndex(ContentProvider.KEY_DATE))));
+    intent.putExtra(ContentProvider.KEY_DATE, new LocalDateTime(cursor.getLong(cursor.getColumnIndex(ContentProvider.KEY_DATE))).toString("dd-MM-yyyy HH:mm"));
     intent.putExtra(ContentProvider.KEY_DETAILS, cursor.getString(cursor.getColumnIndex(ContentProvider.KEY_DETAILS)));
     intent.putExtra(ContentProvider.KEY_MAGNITUDE, String.valueOf(cursor.getDouble(cursor.getColumnIndex(ContentProvider.KEY_MAGNITUDE))));
     intent.putExtra(ContentProvider.KEY_LATITUDE, String.valueOf(cursor.getDouble(cursor.getColumnIndex(ContentProvider.KEY_LATITUDE))));

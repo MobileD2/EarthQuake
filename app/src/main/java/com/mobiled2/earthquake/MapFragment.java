@@ -44,7 +44,6 @@ import java.util.List;
 public class MapFragment extends SupportMapFragment implements IFragmentCallback, OnMapReadyCallback, GoogleMap.OnInfoWindowClickListener, GoogleMap.OnMarkerClickListener, GoogleMap.OnMarkerDragListener, LoaderManager.LoaderCallbacks<Cursor> {
   private static final String TAG = "MAP_FRAGMENT";
 
-  private Resources resources;
   private SharedPreferences prefs;
   private GoogleMap googleMap = null;
 
@@ -53,6 +52,7 @@ public class MapFragment extends SupportMapFragment implements IFragmentCallback
 
   private HashMap<Marker, Uri> images = new HashMap<>();
   private AppCompatActivity context;
+  private Resources resources;
 
   private boolean needsInit = false;
 
@@ -60,13 +60,13 @@ public class MapFragment extends SupportMapFragment implements IFragmentCallback
   public void onAttach (Context context){
     super.onAttach(context);
     this.context = (AppCompatActivity)context;
+    resources = context.getResources();
   }
 
   @Override
   public void onActivityCreated(Bundle savedInstanceState) {
     super.onActivityCreated(savedInstanceState);
 
-    resources = context.getResources();
     prefs = PreferenceManager.getDefaultSharedPreferences(context);
 
     String[] magnitudeValues = resources.getStringArray(R.array.magnitude_values);
@@ -182,8 +182,8 @@ public class MapFragment extends SupportMapFragment implements IFragmentCallback
 
   @Override
   public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-    float minimumMagnitude = Float.parseFloat(prefs.getString(PreferencesActivity.PREF_MIN_MAG, "-1"));
-    int recordsCount = Integer.parseInt(prefs.getString(PreferencesActivity.PREF_RECORDS_COUNT, "-1"));
+    float minimumMagnitude = Float.parseFloat(prefs.getString(PreferencesActivity.PREF_MIN_MAG, String.valueOf(PreferencesActivity.PREF_ALL_MAGNITUDE_VALUE)));
+    int recordsCount = Integer.parseInt(prefs.getString(PreferencesActivity.PREF_RECORDS_COUNT, String.valueOf(PreferencesActivity.PREF_TODAY_RECORDS_VALUE)));
 
     String[] projection = new String[] {
       ContentProvider.KEY_ID,
@@ -202,26 +202,27 @@ public class MapFragment extends SupportMapFragment implements IFragmentCallback
     }
 
     if (recordsCount < 0) {
+      LocalDateTime dateTime = LocalDateTime.now();
+
       switch (recordsCount) {
-        case -1:
-          selection.add("(" + ContentProvider.KEY_DATE + " >= " + LocalDateTime.now().toLocalDate().toDateTime(LocalTime.MIDNIGHT).getMillis() +  ")");
+        case PreferencesActivity.PREF_LAST_WEEK_RECORDS_VALUE:
+          dateTime = dateTime.minusWeeks(1);
         break;
-        case -2:
-          selection.add("(" + ContentProvider.KEY_DATE + " >= " + LocalDateTime.now().toLocalDate().minusDays(7).toDateTime(LocalTime.MIDNIGHT).getMillis() +  ")");
+        case PreferencesActivity.PREF_LAST_MONTH_RECORDS_VALUE:
+          dateTime = dateTime.minusMonths(1);
         break;
-        case -3:
-          selection.add("(" + ContentProvider.KEY_DATE + " >= " + LocalDateTime.now().toLocalDate().minusMonths(1).toDateTime(LocalTime.MIDNIGHT).getMillis() +  ")");
+        case PreferencesActivity.PREF_LAST_QUARTER_RECORDS_VALUE:
+          dateTime = dateTime.minusMonths(3);
         break;
-        case -4:
-          selection.add("(" + ContentProvider.KEY_DATE + " >= " + LocalDateTime.now().toLocalDate().minusMonths(3).toDateTime(LocalTime.MIDNIGHT).getMillis() +  ")");
+        case PreferencesActivity.PREF_LAST_HALF_YEAR_RECORDS_VALUE:
+          dateTime = dateTime.minusMonths(6);
         break;
-        case -5:
-          selection.add("(" + ContentProvider.KEY_DATE + " >= " + LocalDateTime.now().toLocalDate().minusMonths(6).toDateTime(LocalTime.MIDNIGHT).getMillis() +  ")");
-        break;
-        case -6:
-          selection.add("(" + ContentProvider.KEY_DATE + " >= " + LocalDateTime.now().toLocalDate().minusYears(1).toDateTime(LocalTime.MIDNIGHT).getMillis() +  ")");
+        case PreferencesActivity.PREF_LAST_YEAR_RECORDS_VALUE:
+          dateTime = dateTime.minusYears(1);
         break;
       }
+
+      selection.add("(" + ContentProvider.KEY_DATE + " >= " + dateTime.toLocalDate().toDateTime(LocalTime.MIDNIGHT).getMillis() +  ")");
     }
 
     String sortOrder = ContentProvider.KEY_DATE + " DESC";
@@ -271,14 +272,14 @@ public class MapFragment extends SupportMapFragment implements IFragmentCallback
   @Override
   public void onFragmentClick(Intent intent) {
     if (googleMap != null) {
-      int zoom = Integer.parseInt(prefs.getString(PreferencesActivity.PREF_ZOOM_WHEN_ITEM_CLICKED, "-2"));
+      int zoom = Integer.parseInt(prefs.getString(PreferencesActivity.PREF_ZOOM_WHEN_ITEM_CLICKED, String.valueOf(PreferencesActivity.PREF_MAP_AUTO_ZOOM_VALUE)));
       LatLng position = new LatLng(intent.getDoubleExtra(ContentProvider.KEY_LATITUDE, 0), intent.getDoubleExtra(ContentProvider.KEY_LONGITUDE, 0));
 
       switch(zoom) {
-        case -1:
+        case PreferencesActivity.PREF_MAP_MAX_ZOOM_VALUE:
           zoomToMaxValue(position, true);
         break;
-        case -2:
+        case PreferencesActivity.PREF_MAP_AUTO_ZOOM_VALUE:
           zoomToAutoValue(position, true);
         break;
         default:

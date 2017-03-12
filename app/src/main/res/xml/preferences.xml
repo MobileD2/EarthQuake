@@ -28,7 +28,7 @@
                   android:entries="@array/magnitude_options"
                   android:entryValues="@array/magnitude_values"
                   android:dialogTitle="Magnitude"
-                  android:defaultValue="0"/>
+                  android:defaultValue="@string/pref_all_magnitude_value"/>
 
   <ListPreference android:key="PREF_RECORDS_COUNT"
                   android:title="Records Count"
@@ -36,7 +36,7 @@
                   android:entries="@array/records_count_options"
                   android:entryValues="@array/records_count_values"
                   android:dialogTitle="Records Count"
-                  android:defaultValue="-1"/>
+                  android:defaultValue="@string/pref_today_records_value"/>
 
   <ListPreference android:key="PREF_CLUSTERING_COLOR"
                   android:title="Clustering Color"
@@ -44,7 +44,7 @@
                   android:entries="@array/clustering_color_options"
                   android:entryValues="@array/clustering_color_values"
                   android:dialogTitle="Clustering Color"
-                  android:defaultValue="Mean"/>
+                  android:defaultValue="@string/pref_clustering_color_value"/>
 
   <ListPreference android:key="PREF_ZOOM_WHEN_ITEM_CLICKED"
                   android:title="Zoom when item clicked"
@@ -52,7 +52,7 @@
                   android:entries="@array/zoom_when_list_item_clicked_options"
                   android:entryValues="@array/zoom_when_list_item_clicked_values"
                   android:dialogTitle="Zoom when item clicked"
-                  android:defaultValue="-2"/>
+                  android:defaultValue="@string/pref_map_auto_zoom_value"/>
 
   <CheckBoxPreference android:key="PREF_NOTIFICATION"
                       android:title="Notification"

@@ -55,4 +55,19 @@
 
   <string name="map_marker_icon">"Icon"</string>
   <string name="map_marker_image_url">http://misc.commonsware.com/mapsv2</string>
+
+  <string name="pref_all_magnitude_value">-1</string>
+
+  <string name="pref_today_records_value">-1</string>
+  <string name="pref_last_week_records_value">-2</string>
+  <string name="pref_last_month_records_value">-3</string>
+  <string name="pref_last_quarter_records_value">-4</string>
+  <string name="pref_last_half_year_records_value">-5</string>
+  <string name="pref_last_year_records_value">-6</string>
+  <string name="pref_all_records_value">0</string>
+
+  <string name="pref_clustering_color_value">Mean</string>
+
+  <string name="pref_map_max_zoom_value">-1</string>
+  <string name="pref_map_auto_zoom_value">-2</string>
 </resources>

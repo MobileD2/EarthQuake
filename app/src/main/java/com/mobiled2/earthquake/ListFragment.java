@@ -3,6 +3,7 @@ package com.mobiled2.earthquake;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -25,13 +26,15 @@ public class ListFragment extends android.support.v4.app.ListFragment implements
   private static final String TAG = "LIST_FRAGMENT";
 
   private SharedPreferences prefs;
-  QuakeDataCursorAdapter adapter;
-  AppCompatActivity context;
+  private QuakeDataCursorAdapter adapter;
+  private AppCompatActivity context;
+  private Resources resources;
 
   @Override
   public void onAttach (Context context){
     super.onAttach(context);
     this.context = (AppCompatActivity)context;
+    resources = context.getResources();
   }
 
   @Override
@@ -72,8 +75,8 @@ public class ListFragment extends android.support.v4.app.ListFragment implements
 
   @Override
   public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-    float minimumMagnitude = Float.parseFloat(prefs.getString(PreferencesActivity.PREF_MIN_MAG, "-1"));
-    int recordsCount = Integer.parseInt(prefs.getString(PreferencesActivity.PREF_RECORDS_COUNT, "-1"));
+    float minimumMagnitude = Float.parseFloat(prefs.getString(PreferencesActivity.PREF_MIN_MAG, String.valueOf(PreferencesActivity.PREF_ALL_MAGNITUDE_VALUE)));
+    int recordsCount = Integer.parseInt(prefs.getString(PreferencesActivity.PREF_RECORDS_COUNT, String.valueOf(PreferencesActivity.PREF_TODAY_RECORDS_VALUE)));
 
     String[] projection = new String[] {
       ContentProvider.KEY_ID,
@@ -92,26 +95,27 @@ public class ListFragment extends android.support.v4.app.ListFragment implements
     }
 
     if (recordsCount < 0) {
+      LocalDateTime dateTime = LocalDateTime.now();
+
       switch (recordsCount) {
-        case -1:
-          selection.add("(" + ContentProvider.KEY_DATE + " >= " + LocalDateTime.now().toLocalDate().toDateTime(LocalTime.MIDNIGHT).getMillis() +  ")");
+        case PreferencesActivity.PREF_LAST_WEEK_RECORDS_VALUE:
+          dateTime = dateTime.minusWeeks(1);
         break;
-        case -2:
-          selection.add("(" + ContentProvider.KEY_DATE + " >= " + LocalDateTime.now().toLocalDate().minusDays(7).toDateTime(LocalTime.MIDNIGHT).getMillis() +  ")");
+        case PreferencesActivity.PREF_LAST_MONTH_RECORDS_VALUE:
+          dateTime = dateTime.minusMonths(1);
         break;
-        case -3:
-          selection.add("(" + ContentProvider.KEY_DATE + " >= " + LocalDateTime.now().toLocalDate().minusMonths(1).toDateTime(LocalTime.MIDNIGHT).getMillis() +  ")");
+        case PreferencesActivity.PREF_LAST_QUARTER_RECORDS_VALUE:
+          dateTime = dateTime.minusMonths(3);
         break;
-        case -4:
-          selection.add("(" + ContentProvider.KEY_DATE + " >= " + LocalDateTime.now().toLocalDate().minusMonths(3).toDateTime(LocalTime.MIDNIGHT).getMillis() +  ")");
+        case PreferencesActivity.PREF_LAST_HALF_YEAR_RECORDS_VALUE:
+          dateTime = dateTime.minusMonths(6);
         break;
-        case -5:
-          selection.add("(" + ContentProvider.KEY_DATE + " >= " + LocalDateTime.now().toLocalDate().minusMonths(6).toDateTime(LocalTime.MIDNIGHT).getMillis() +  ")");
-        break;
-        case -6:
-          selection.add("(" + ContentProvider.KEY_DATE + " >= " + LocalDateTime.now().toLocalDate().minusYears(1).toDateTime(LocalTime.MIDNIGHT).getMillis() +  ")");
+        case PreferencesActivity.PREF_LAST_YEAR_RECORDS_VALUE:
+          dateTime = dateTime.minusYears(1);
         break;
       }
+
+      selection.add("(" + ContentProvider.KEY_DATE + " >= " + dateTime.toLocalDate().toDateTime(LocalTime.MIDNIGHT).getMillis() +  ")");
     }
 
     String sortOrder = ContentProvider.KEY_DATE + " DESC";

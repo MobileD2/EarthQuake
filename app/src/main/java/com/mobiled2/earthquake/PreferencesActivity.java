@@ -17,6 +17,18 @@ public class PreferencesActivity extends PreferenceActivity {
   public static final String PREF_ACTION_BAR_INDEX = "PREF_ACTION_BAR_INDEX";
   public static final String PREF_NOTIFICATION = "PREF_NOTIFICATION";
 
+  public static final int PREF_ALL_MAGNITUDE_VALUE = -1;
+
+  public static final int PREF_TODAY_RECORDS_VALUE = -1;
+  public static final int PREF_LAST_WEEK_RECORDS_VALUE = -2;
+  public static final int PREF_LAST_MONTH_RECORDS_VALUE = -3;
+  public static final int PREF_LAST_QUARTER_RECORDS_VALUE = -4;
+  public static final int PREF_LAST_HALF_YEAR_RECORDS_VALUE = -5;
+  public static final int PREF_LAST_YEAR_RECORDS_VALUE = -6;
+
+  public static final int PREF_MAP_MAX_ZOOM_VALUE = -1;
+  public static final int PREF_MAP_AUTO_ZOOM_VALUE = -2;
+
   @TargetApi(Build.VERSION_CODES.HONEYCOMB)
   public static class PreferencesFragment extends PreferenceFragment {
     @Override

@@ -46,7 +46,7 @@
   </string-array>
 
   <string-array name="magnitude_values">
-    <item>-1</item>
+    <item>@string/pref_all_magnitude_value</item>
     <item>0</item>
     <item>1</item>
     <item>2</item>
@@ -80,13 +80,13 @@
     <item>200</item>
     <item>500</item>
     <item>1000</item>
-    <item>-1</item>
-    <item>-2</item>
-    <item>-3</item>
-    <item>-4</item>
-    <item>-5</item>
-    <item>-6</item>
-    <item>0</item>
+    <item>@string/pref_today_records_value</item>
+    <item>@string/pref_last_week_records_value</item>
+    <item>@string/pref_last_month_records_value</item>
+    <item>@string/pref_last_quarter_records_value</item>
+    <item>@string/pref_last_half_year_records_value</item>
+    <item>@string/pref_last_year_records_value</item>
+    <item>@string/pref_all_records_value</item>
   </string-array>
 
   <string-array name="clustering_color_options">
@@ -127,7 +127,7 @@
   </string-array>
 
   <string-array name="zoom_when_list_item_clicked_values">
-    <item>-2</item>
+    <item>@string/pref_map_auto_zoom_value</item>
     <item>2</item>
     <item>3</item>
     <item>4</item>
@@ -148,7 +148,7 @@
     <item>20</item>
     <item>21</item>
     <item>22</item>
-    <item>-1</item>
+    <item>@string/pref_map_max_zoom_value</item>
   </string-array>
 
 </resources>

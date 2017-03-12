@@ -66,6 +66,7 @@
     <item>Last 500</item>
     <item>Last 1000</item>
     <item>Today</item>
+    <item>Yesterday</item>
     <item>Last Week</item>
     <item>Last Month</item>
     <item>Last 3 Months</item>
@@ -81,6 +82,7 @@
     <item>500</item>
     <item>1000</item>
     <item>@string/pref_today_records_value</item>
+    <item>@string/pref_yesterday_records_value</item>
     <item>@string/pref_last_week_records_value</item>
     <item>@string/pref_last_month_records_value</item>
     <item>@string/pref_last_quarter_records_value</item>

@@ -23,6 +23,7 @@ import com.androidmapsextensions.Marker;
 import com.androidmapsextensions.MarkerOptions;
 import com.androidmapsextensions.OnMapReadyCallback;
 import com.androidmapsextensions.SupportMapFragment;
+import com.androidmapsextensions.utils.LatLngBoundsUtils;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
@@ -308,8 +309,6 @@ public class MapFragment extends SupportMapFragment implements IFragmentCallback
       cameraUpdates.add(new MapCameraUpdate(cameraUpdate, false, 0));
     }
 
-    cameraUpdates.add(new MapCameraUpdate(CameraUpdateFactory.newLatLng(position), true, 10));
-
     MapCameraUpdates mapCameraUpdates = new MapCameraUpdates(googleMap, cameraUpdates);
 
     Property<MapCameraUpdates, Integer> property = Property.of(MapCameraUpdates.class, Integer.class, "index");
@@ -323,20 +322,6 @@ public class MapFragment extends SupportMapFragment implements IFragmentCallback
     DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
 
     return (int)Math.max(displayMetrics.widthPixels * scale, displayMetrics.heightPixels * scale);
-  }
-
-  private double getPositionsDistance(LatLng from, LatLng to) {
-    return SphericalUtil.computeDistanceBetween(from, to);
-
-//    double chLatitude = to.latitude - from.latitude;
-//    double chLongitude = to.longitude - from.longitude;
-//    double dLatitude = chLatitude * (Math.PI / 180);
-//    double dLongitude = chLongitude * (Math.PI / 180);
-//    double rLatitude1 = to.latitude * (Math.PI / 180);
-//    double rLatitude2 = to.latitude * (Math.PI / 180);
-//    double a = Math.sin(dLatitude / 2) * Math.sin(dLatitude / 2) + Math.sin(dLongitude / 2) * Math.sin(dLongitude / 2) * Math.cos(rLatitude1) * Math.cos(rLatitude2);
-//
-//    return 12742000 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
   }
 
   private LatLng findNearestMarkerPosition(LatLng currentPosition, List<Marker> markers, List<LatLng> omitPositions) {
@@ -440,7 +425,7 @@ public class MapFragment extends SupportMapFragment implements IFragmentCallback
     private double distance;
 
     PositionDistance (LatLng from, Marker to) {
-      this.distance = getPositionsDistance(from, to.getPosition());
+      this.distance = SphericalUtil.computeDistanceBetween(from, to.getPosition());
       this.position = to.getPosition();
     }
 
@@ -454,8 +439,18 @@ public class MapFragment extends SupportMapFragment implements IFragmentCallback
   }
 
   private LatLngBounds createBoundsArea(LatLng position, LatLng nearestPosition) {
-    double distance = getPositionsDistance(position, nearestPosition);
+    double distance = SphericalUtil.computeDistanceBetween(position, nearestPosition);
 
-    return new LatLngBounds(SphericalUtil.computeOffset(position, distance, 180), SphericalUtil.computeOffset(position, distance, 0));
+    LatLngBounds latLngBoundsDiagonal = new LatLngBounds(SphericalUtil.computeOffset(position, distance, 225), SphericalUtil.computeOffset(position, distance, 45));
+    LatLngBounds latLngBoundsVertical = new LatLngBounds(SphericalUtil.computeOffset(position, distance, 180), SphericalUtil.computeOffset(position, distance, 0));
+    LatLngBounds latLngBoundsHorizontal = new LatLngBounds(SphericalUtil.computeOffset(position, distance, 270), SphericalUtil.computeOffset(position, distance, 90));
+
+    double latitudeRequired = LatLngBounds.builder()
+      .include(new LatLng(latLngBoundsDiagonal.getCenter().latitude, position.longitude))
+      .include(new LatLng(latLngBoundsVertical.getCenter().latitude, position.longitude))
+      .include(new LatLng(latLngBoundsHorizontal.getCenter().latitude, position.longitude))
+      .build().getCenter().latitude;
+
+    return LatLngBoundsUtils.fromCenterAndPositions(new LatLng(latitudeRequired, position.longitude), nearestPosition);
   }
 }

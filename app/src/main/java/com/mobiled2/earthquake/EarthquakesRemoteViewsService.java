@@ -62,12 +62,14 @@ public class EarthquakesRemoteViewsService extends RemoteViewsService {
         String magnitude = cursor.getString(cursor.getColumnIndexOrThrow(ContentProvider.KEY_MAGNITUDE));
         double latitude = cursor.getDouble(cursor.getColumnIndexOrThrow(ContentProvider.KEY_LATITUDE));
         double longitude = cursor.getDouble(cursor.getColumnIndexOrThrow(ContentProvider.KEY_LONGITUDE));
+        String depth = cursor.getString(cursor.getColumnIndexOrThrow(ContentProvider.KEY_DEPTH));
         String details = cursor.getString(cursor.getColumnIndexOrThrow(ContentProvider.KEY_DETAILS));
         String date = new LocalDateTime(cursor.getLong(cursor.getColumnIndexOrThrow(ContentProvider.KEY_DATE))).toString("dd-MM-yyyy HH:mm");
         RemoteViews remoteViews = new RemoteViews(context.getPackageName(), R.layout.widget_list_item);
 
         remoteViews.setTextViewText(R.id.widget_magnitude, magnitude);
         remoteViews.setTextViewText(R.id.widget_details, details + "\n" + date);
+        remoteViews.setTextViewText(R.id.widget_depth, depth);
 
         Intent fillInIntent = new Intent();
         Uri uri = Uri.withAppendedPath(ContentProvider.CONTENT_URI, "earthquakes/" + id);

@@ -27,7 +27,7 @@ android {
 }
 
 dependencies {
-  compile fileTree(dir: 'libs', include: ['*.jar'])
+  compile fileTree(include: ['*.jar'], dir: 'libs')
   androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
     exclude group: 'com.android.support', module: 'support-annotations'
   })
@@ -35,7 +35,8 @@ dependencies {
   compile 'com.android.support:support-core-utils:25.2.0'
   compile 'com.android.support:design:25.2.0'
   //noinspection GradleDependency
-  compile 'com.google.android.gms:play-services-maps:10.0.0' // Version is set to 10.0.0 to be compatible with API 10
+  compile 'com.google.android.gms:play-services-maps:10.0.0'
+  // Version is set to 10.0.0 to be compatible with API 10
   compile 'com.google.maps.android:android-maps-utils:0.4.3'
   compile 'com.androidmapsextensions:android-maps-extensions:2.4.0'
   compile 'com.squareup.picasso:picasso:2.5.2'

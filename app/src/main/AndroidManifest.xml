@@ -69,17 +69,51 @@
     <provider
       android:authorities="com.mobiled2.earthquakecontentprovider"
       android:name=".ContentProvider"
-      android:exported="false"/>
+      android:exported="true"
+      tools:ignore="ExportedContentProvider"/>
 
     <service android:name=".UpdateService"
              android:enabled="true"/>
 
     <receiver android:name=".AlarmReceiver"
               android:exported="false">
+
       <intent-filter>
         <action android:name="com.mobiled2.earthquake.ACTION_REFRESH_EARTHQUAKE_ALARM"/>
       </intent-filter>
+
     </receiver>
+
+    <receiver android:name=".LastEarthquakeWidget"
+              android:label="@string/last_earthquake_widget_label">
+
+      <intent-filter>
+        <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
+      </intent-filter>
+
+      <intent-filter>
+        <action android:name="com.mobiled2.earthquake.QUAKES_REFRESHED"/>
+      </intent-filter>
+
+      <meta-data android:name="android.appwidget.provider"
+                 android:resource="@xml/last_earthquake_widget_info"/>
+
+    </receiver>
+
+    <receiver android:name=".EarthquakesWidget"
+              android:label="@string/earthquakes_widget_label">
+
+      <intent-filter>
+        <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
+      </intent-filter>
+
+      <meta-data android:name="android.appwidget.provider"
+                 android:resource="@xml/earthquakes_widget_info"/>
+
+    </receiver>
+
+    <service android:name=".EarthquakesRemoteViewsService"
+             android:permission="android.permission.BIND_REMOTEVIEWS"/>
 
     <meta-data android:name="android.app.default_searchable"
                android:value=".SearchActivity"/>

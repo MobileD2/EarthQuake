@@ -3,12 +3,15 @@ package com.mobiled2.earthquake;
 import android.app.AlarmManager;
 import android.app.IntentService;
 import android.app.PendingIntent;
+import android.appwidget.AppWidgetManager;
+import android.content.ComponentName;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.os.Build;
 import android.os.IBinder;
 import android.os.SystemClock;
 import android.preference.PreferenceManager;
@@ -33,6 +36,8 @@ import javax.xml.parsers.ParserConfigurationException;
 
 public class UpdateService extends IntentService {
   private static final String TAG = "EARTHQUAKE_SERVICE";
+
+  public static final String QUAKES_REFRESHED = "com.mobiled2.earthquake.QUAKES_REFRESHED";
 
   private AlarmManager alarmManager;
   private PendingIntent alarmIntent;
@@ -74,6 +79,8 @@ public class UpdateService extends IntentService {
     }
 
     refreshEarthquakes();
+
+    updateWidgets();
   }
 
   public void refreshEarthquakes() {
@@ -148,6 +155,18 @@ public class UpdateService extends IntentService {
       } finally {
         cursor.close();
       }
+    }
+  }
+
+  private void updateWidgets() {
+    sendBroadcast(new Intent(QUAKES_REFRESHED));
+
+    Context context = getApplicationContext();
+    AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
+    ComponentName earthquakesWidget = new ComponentName(context, EarthquakesWidget.class);
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+      appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetManager.getAppWidgetIds(earthquakesWidget), R.id.widget_list_view);
     }
   }
 }

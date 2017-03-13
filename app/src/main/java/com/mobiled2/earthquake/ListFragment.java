@@ -11,18 +11,15 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.ListView;
 
 import org.joda.time.LocalDateTime;
-import org.joda.time.LocalTime;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class ListFragment extends android.support.v4.app.ListFragment implements IFragmentCallback, LoaderManager.LoaderCallbacks<Cursor> {
+  public static final int PAGE_ADAPTER_POSITION = 0;
+
   private static final String TAG = "LIST_FRAGMENT";
 
   private SharedPreferences prefs;
@@ -75,17 +72,35 @@ public class ListFragment extends android.support.v4.app.ListFragment implements
 
   @Override
   public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-    return FragmentLoader.createLoader(context, prefs);
+    CursorLoaderQuery cursorLoaderQuery = new CursorLoaderQuery(prefs);
+
+    return new CursorLoader(context, ContentProvider.CONTENT_URI, cursorLoaderQuery.getProjection(), cursorLoaderQuery.getSelection(), null, cursorLoaderQuery.getSortOrder());
   }
 
   @Override
   public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
     adapter.swapCursor(data);
+    onFragmentReady();
   }
 
   @Override
   public void onLoaderReset(Loader<Cursor> loader) {
     adapter.swapCursor(null);
+  }
+
+  @Override
+  public void onFragmentReady() {
+    ((IFragmentCallback)context).onFragmentReady();
+  }
+
+  @Override
+  public int getFragmentPageAdapterPosition() {
+    return PAGE_ADAPTER_POSITION;
+  }
+
+  @Override
+  public boolean onFragmentShouldClick(Intent intent) {
+    return false;
   }
 
   @Override

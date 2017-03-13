@@ -1,10 +1,6 @@
 package com.mobiled2.earthquake;
 
-import android.content.Context;
 import android.content.SharedPreferences;
-import android.database.Cursor;
-import android.support.v4.content.CursorLoader;
-import android.support.v4.content.Loader;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -14,14 +10,16 @@ import org.joda.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
-class FragmentLoader {
-  private static final String TAG = "FRAGMENT_LOADER";
+class CursorLoaderQuery {
+  private String[] projection;
+  private List<String> selection = new ArrayList<>();
+  private String sortOrder;
 
-  static Loader<Cursor> createLoader(Context context, SharedPreferences prefs) {
+  CursorLoaderQuery(SharedPreferences prefs) {
     float minimumMagnitude = Float.parseFloat(prefs.getString(PreferencesActivity.PREF_MIN_MAG, String.valueOf(PreferencesActivity.PREF_ALL_MAGNITUDE_VALUE)));
     int recordsCount = Integer.parseInt(prefs.getString(PreferencesActivity.PREF_RECORDS_COUNT, String.valueOf(PreferencesActivity.PREF_TODAY_RECORDS_VALUE)));
 
-    String[] projection = new String[] {
+    projection = new String[] {
       ContentProvider.KEY_ID,
       ContentProvider.KEY_DATE,
       ContentProvider.KEY_MAGNITUDE,
@@ -30,8 +28,6 @@ class FragmentLoader {
       ContentProvider.KEY_LONGITUDE,
       ContentProvider.KEY_DEPTH
     };
-
-    List<String> selection = new ArrayList<>();
 
     if (minimumMagnitude >= 0) {
       selection.add('(' + ContentProvider.KEY_MAGNITUDE + " > " + minimumMagnitude + ')');
@@ -66,12 +62,26 @@ class FragmentLoader {
       selection.add("(" + ContentProvider.KEY_DATE + " >= " + startDateTime.toLocalDate().toDateTime(LocalTime.MIDNIGHT).getMillis() +  " AND " + ContentProvider.KEY_DATE + " < " + endDateTime.toLocalDate().toDateTime(LocalTime.MIDNIGHT).getMillis() + ")");
     }
 
-    String sortOrder = ContentProvider.KEY_DATE + " DESC";
+    sortOrder = ContentProvider.KEY_DATE + " DESC";
 
     if (recordsCount > 0) {
       sortOrder += " LIMIT " + recordsCount;
     }
+  }
 
-    return new CursorLoader(context, ContentProvider.CONTENT_URI, projection, TextUtils.join(" AND ", selection), null, sortOrder);
+  String[] getProjection() {
+    return projection;
+  }
+
+  String getSelection() {
+    return TextUtils.join(" AND ", selection);
+  }
+
+  String getSortOrder() {
+    return sortOrder;
+  }
+
+  public String toString() {
+    return "Selection: " + getSelection() + ", SortOrder: " + getSortOrder();
   }
 }

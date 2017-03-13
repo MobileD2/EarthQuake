@@ -71,4 +71,12 @@
 
   <string name="pref_map_max_zoom_value">-1</string>
   <string name="pref_map_auto_zoom_value">-2</string>
+
+  <string name="last_earthquake_widget_label">Last earthquake</string>
+  <string name="earthquakes_widget_label">Earthquakes</string>
+
+  <string name="widget_magnitude_empty_value">---</string>
+  <string name="widget_details_empty_value">Details Unknown</string>
+  <string name="widget_date_empty_value">---</string>
+  <string name="widget_list_empty_value">No earthquakes</string>
 </resources>

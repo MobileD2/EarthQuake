@@ -12,7 +12,6 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
-import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.widget.Toast;
@@ -36,13 +35,14 @@ import com.nineoldandroids.animation.TypeEvaluator;
 import com.nineoldandroids.util.Property;
 
 import org.joda.time.LocalDateTime;
-import org.joda.time.LocalTime;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 public class MapFragment extends SupportMapFragment implements IFragmentCallback, OnMapReadyCallback, GoogleMap.OnInfoWindowClickListener, GoogleMap.OnMarkerClickListener, GoogleMap.OnMarkerDragListener, LoaderManager.LoaderCallbacks<Cursor> {
+  public static final int PAGE_ADAPTER_POSITION = 1;
+
   private static final String TAG = "MAP_FRAGMENT";
 
   private SharedPreferences prefs;
@@ -183,12 +183,15 @@ public class MapFragment extends SupportMapFragment implements IFragmentCallback
 
   @Override
   public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-    return FragmentLoader.createLoader(context, prefs);
+    CursorLoaderQuery cursorLoaderQuery = new CursorLoaderQuery(prefs);
+
+    return new CursorLoader(context, ContentProvider.CONTENT_URI, cursorLoaderQuery.getProjection(), cursorLoaderQuery.getSelection(), null, cursorLoaderQuery.getSortOrder());
   }
 
   @Override
   public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
     refreshLocations(googleMap, data);
+    onFragmentReady();
   }
 
   @Override
@@ -219,6 +222,21 @@ public class MapFragment extends SupportMapFragment implements IFragmentCallback
         }
       }
     }
+  }
+
+  @Override
+  public void onFragmentReady() {
+    ((IFragmentCallback)context).onFragmentReady();
+  }
+
+  @Override
+  public int getFragmentPageAdapterPosition() {
+    return PAGE_ADAPTER_POSITION;
+  }
+
+  @Override
+  public boolean onFragmentShouldClick(Intent intent) {
+    return !(Double.isNaN(intent.getDoubleExtra(ContentProvider.KEY_LATITUDE, Double.NaN)) || Double.isNaN(intent.getDoubleExtra(ContentProvider.KEY_LATITUDE, Double.NaN)));
   }
 
   @Override

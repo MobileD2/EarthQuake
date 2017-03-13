@@ -8,6 +8,7 @@ import android.content.pm.FeatureInfo;
 import android.content.pm.PackageManager;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
@@ -199,7 +200,7 @@ public class MainActivity extends ToolbarActivity implements IFragmentCallback {
     viewPager = (ViewPager)findViewById(R.id.pager);
     viewPager.setAdapter(pagerAdapter);
     viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
-    viewPager.setCurrentItem(Integer.parseInt(prefs.getString(PreferencesActivity.PREF_ACTION_BAR_INDEX, String.valueOf(PagerAdapter.LIST_POSITION))));
+    viewPager.setCurrentItem(Integer.parseInt(prefs.getString(PreferencesActivity.PREF_ACTION_BAR_INDEX, String.valueOf(ListFragment.PAGE_ADAPTER_POSITION))));
 
     tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener(){
       @Override
@@ -227,11 +228,29 @@ public class MainActivity extends ToolbarActivity implements IFragmentCallback {
   }
 
   @Override
-  public void onFragmentClick(Intent intent) {
-    viewPager.setCurrentItem(PagerAdapter.MAP_POSITION);
+  public boolean onFragmentShouldClick(Intent intent) {
+    return false;
+  }
 
+  @Override
+  public void onFragmentReady() {
+    onFragmentClick(getIntent());
+  }
+
+  @Override
+  public int getFragmentPageAdapterPosition() {
+    return -1;
+  }
+
+  @Override
+  public void onFragmentClick(Intent intent) {
     for (Fragment fragment : getSupportFragmentManager().getFragments()) {
-      ((IFragmentCallback)fragment).onFragmentClick(intent);
+      IFragmentCallback iFragmentCallback = (IFragmentCallback)fragment;
+
+      if (iFragmentCallback.onFragmentShouldClick(intent)) {
+        viewPager.setCurrentItem(iFragmentCallback.getFragmentPageAdapterPosition());
+        iFragmentCallback.onFragmentClick(intent);
+      }
     }
   }
 }

@@ -16,8 +16,6 @@ import org.joda.time.LocalDateTime;
 public class SearchFragment extends ListFragment implements LoaderManager.LoaderCallbacks<Cursor> {
   public static final String QUERY_EXTRA_KEY = "QUERY_EXTRA_KEY";
 
-  private static final String TAG = "SEARCH_FRAGMENT";
-
   QuakeDataCursorAdapter adapter;
 
   @Override

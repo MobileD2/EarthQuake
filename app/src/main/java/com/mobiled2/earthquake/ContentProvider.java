@@ -172,8 +172,6 @@ public class ContentProvider extends android.content.ContentProvider {
 
     private static final String TAG = "EARTHQUAKE_PROVIDER";
 
-    private SQLiteDatabase earthquakesDb;
-
     DatabaseHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
       super(context, name, factory, version);
     }

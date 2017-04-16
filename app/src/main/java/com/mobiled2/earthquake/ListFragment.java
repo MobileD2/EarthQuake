@@ -3,7 +3,6 @@ package com.mobiled2.earthquake;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.res.Resources;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -11,7 +10,6 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.widget.ListView;
 
@@ -20,18 +18,14 @@ import org.joda.time.LocalDateTime;
 public class ListFragment extends android.support.v4.app.ListFragment implements IFragmentCallback, LoaderManager.LoaderCallbacks<Cursor> {
   public static final int PAGE_ADAPTER_POSITION = 0;
 
-  private static final String TAG = "LIST_FRAGMENT";
-
   private SharedPreferences prefs;
   private QuakeDataCursorAdapter adapter;
   private AppCompatActivity context;
-  private Resources resources;
 
   @Override
   public void onAttach (Context context){
     super.onAttach(context);
     this.context = (AppCompatActivity)context;
-    resources = context.getResources();
   }
 
   @Override

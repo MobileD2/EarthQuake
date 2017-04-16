@@ -15,7 +15,6 @@ class Notification {
 
   private static final double LIGHT_MAGNITUDE = 3;
   private static final double MEDIUM_MAGNITUDE = 5;
-  private static final double HEAVY_MAGNITUDE = 7;
 
   private static final int LIGHT_MAGNITUDE_COLOR = Color.GREEN;
   private static final int MEDIUM_MAGNITUDE_COLOR = Color.YELLOW;

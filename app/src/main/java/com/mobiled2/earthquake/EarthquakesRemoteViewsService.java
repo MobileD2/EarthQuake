@@ -8,7 +8,6 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.preference.PreferenceManager;
-import android.util.Log;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
 
@@ -22,8 +21,6 @@ public class EarthquakesRemoteViewsService extends RemoteViewsService {
   }
 
   private class EarthquakesRemoteViewsFactory implements RemoteViewsFactory {
-    private static final String TAG = "REMOTE_FACTORY";
-
     private Context context;
     private SharedPreferences prefs;
     private Cursor cursor;

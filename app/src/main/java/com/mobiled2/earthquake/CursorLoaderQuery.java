@@ -2,7 +2,6 @@ package com.mobiled2.earthquake;
 
 import android.content.SharedPreferences;
 import android.text.TextUtils;
-import android.util.Log;
 
 import org.joda.time.LocalDateTime;
 import org.joda.time.LocalTime;

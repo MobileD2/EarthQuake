@@ -12,7 +12,6 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.ColorUtils;
 import android.support.v4.util.LruCache;
 import android.support.v4.util.Pair;
-import android.util.Log;
 
 import com.androidmapsextensions.ClusterOptions;
 import com.androidmapsextensions.ClusterOptionsProvider;
@@ -23,7 +22,6 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import java.util.List;
 
 class MapClusterOptionsProvider implements ClusterOptionsProvider {
-  private final static String TAG = "MAP_CLUSTER_PROVIDER";
   private final LruCache<Pair<Integer, Integer>, BitmapDescriptor> cache = new LruCache<>(128);
   private final ClusterOptions clusterOptions = new ClusterOptions().anchor(0.5f, 0.5f);
   private float startValue;

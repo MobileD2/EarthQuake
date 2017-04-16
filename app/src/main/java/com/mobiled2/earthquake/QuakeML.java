@@ -1,23 +1,12 @@
 package com.mobiled2.earthquake;
 
-import android.util.Log;
-
 import org.joda.time.LocalDateTime;
 import org.joda.time.format.ISODateTimeFormat;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.Locale;
-import java.util.TimeZone;
-
 class QuakeML {
-  private static final String TAG = "EARTHQUAKE_QUAKEML";
-
   QuakeData parse(Element entry) {
     if (entry == null) {
       return null;

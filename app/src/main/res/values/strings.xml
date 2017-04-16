@@ -44,15 +44,6 @@
   <string name="google_maps_v2_not_available">Google Maps V2 not available</string>
   <string name="google_play_services_out_of_date">Google Play services out of date</string>
 
-  <string name="un">UN</string>
-  <string name="united_nations">United Nations</string>
-  <string name="lincoln_center">Lincoln Center</string>
-  <string name="lincoln_center_snippet">Home of Jazz at Lincoln Center</string>
-  <string name="carnegie_hall">Carnegie Hall</string>
-  <string name="practice_x3">Where you go with practice, practice, practice</string>
-  <string name="downtown_club">The Downtown Club</string>
-  <string name="heisman_trophy">Original home of the Heisman Trophy</string>
-
   <string name="map_marker_icon">"Icon"</string>
   <string name="map_marker_image_url">http://misc.commonsware.com/mapsv2</string>
 
